@@ -1,0 +1,6 @@
+{
+  "name": "Rajon Chowdhury - Binary Signal Bot",
+  "description": "Professional Quotex, Pocket Option & binary trading signals bot with AI market analyzer, live candlestick charts, and technical indicators by Rajon Chowdhury (RC Trader).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
