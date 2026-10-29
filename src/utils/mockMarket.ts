@@ -214,6 +214,26 @@ export const CURRENCY_PAIRS: CurrencyPair[] = [
   },
 ];
 
+export const TIMEFRAME_SECONDS: Record<Timeframe, number> = {
+  '5s': 5,
+  '15s': 15,
+  '30s': 30,
+  '1m': 60,
+  '2m': 120,
+  '5m': 300,
+};
+
+export function getTimeframeSeconds(tf: Timeframe): number {
+  return TIMEFRAME_SECONDS[tf] || 60;
+}
+
+export function formatTimeRemaining(seconds: number): string {
+  if (seconds <= 0) return '00:00';
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+}
+
 export function generateSignalForPair(
   pair: CurrencyPair,
   brokerName: string = 'Quotex',
@@ -272,7 +292,8 @@ export function generateSignalForPair(
     confidence,
   };
 
-  const candleExpiryTime = Date.now() + 60000;
+  const durationSec = TIMEFRAME_SECONDS[timeframe] || 60;
+  const candleExpiryTime = Date.now() + durationSec * 1000;
 
   return {
     id: `sig_${Date.now()}_${pair.id}`,
@@ -319,8 +340,8 @@ export const INITIAL_SIGNAL_FEEDS: SignalData[] = [
       stochastic: 74,
       confidence: 85,
     },
-    createdAt: Date.now() - 15000,
-    candleExpiryTime: Date.now() + 45000,
+    createdAt: Date.now() - 60000,
+    candleExpiryTime: Date.now() - 5000,
     tradeThreshold: 75,
     status: 'ACTIVE',
     message: 'Upward move expected · enter on the next candle',

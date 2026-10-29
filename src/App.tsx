@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { BrokerInfo, CurrencyPair, MarketType, SignalData, Timeframe } from './types/trading';
 import { BROKERS, CURRENCY_PAIRS, INITIAL_SIGNAL_FEEDS, generateSignalForPair } from './utils/mockMarket';
-import { sound } from './utils/sound';
 import { TopBar } from './components/TopBar';
 import { SignalCard } from './components/SignalCard';
 import { BottomNav, TabKey } from './components/BottomNav';
@@ -12,7 +11,8 @@ import { LiveSignalsFeed } from './components/LiveSignalsFeed';
 import { InjectorStrategy } from './components/InjectorStrategy';
 import { DashboardView } from './components/DashboardView';
 import { MoreDrawer } from './components/MoreDrawer';
-import { ShieldCheck, Flame, Radio, Zap, Calculator } from 'lucide-react';
+import { ChartScannerModal } from './components/ChartScannerModal';
+import { ShieldCheck, Flame, Radio } from 'lucide-react';
 
 export default function App() {
   // Primary States
@@ -24,13 +24,11 @@ export default function App() {
   const [currentSignal, setCurrentSignal] = useState<SignalData>(INITIAL_SIGNAL_FEEDS[0]);
   const [signalList, setSignalList] = useState<SignalData[]>(INITIAL_SIGNAL_FEEDS);
 
-  // Audio preference
-  const [soundMuted, setSoundMuted] = useState<boolean>(() => sound.isMuted());
-
   // Modals
   const [isPairModalOpen, setIsPairModalOpen] = useState<boolean>(false);
   const [isBrokerModalOpen, setIsBrokerModalOpen] = useState<boolean>(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
+  const [isScannerModalOpen, setIsScannerModalOpen] = useState<boolean>(false);
 
   // Analyzing state for motion graphics
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
@@ -41,11 +39,6 @@ export default function App() {
     const newSig = generateSignalForPair(pair, activeBroker.name, timeframe);
     setCurrentSignal(newSig);
     setSignalList((prev) => [newSig, ...prev.slice(0, 7)]);
-    if (newSig.direction === 'CALL') {
-      sound.playCallSignal();
-    } else {
-      sound.playPutSignal();
-    }
   };
 
   const handleToggleMarketType = (type: MarketType) => {
@@ -55,35 +48,35 @@ export default function App() {
   };
 
   // Generate new signal with motion graphics scanner animation
-  const handleAnalyzeNext = () => {
+  const handleAnalyzeNext = (targetTimeframe?: Timeframe) => {
+    // Strict Lock: User CANNOT generate another signal until current timeframe candle expires!
+    if (currentSignal && Date.now() < currentSignal.candleExpiryTime) {
+      return;
+    }
+
+    const tf = targetTimeframe || timeframe;
     setIsAnalyzing(true);
-    sound.playScanBeep();
 
     setTimeout(() => {
-      const freshSig = generateSignalForPair(selectedPair, activeBroker.name, timeframe);
+      const freshSig = generateSignalForPair(selectedPair, activeBroker.name, tf);
       setCurrentSignal(freshSig);
       setSignalList((prev) => [freshSig, ...prev.filter((s) => s.id !== freshSig.id).slice(0, 7)]);
       setIsAnalyzing(false);
-
-      if (freshSig.direction === 'CALL') {
-        sound.playCallSignal();
-      } else {
-        sound.playPutSignal();
-      }
     }, 1100);
   };
 
   return (
-    <div className="min-h-screen bg-[#080718] text-slate-100 flex flex-col font-sans pb-28 md:pb-16 selection:bg-purple-600/30 selection:text-white">
+    <div className="min-h-screen bg-transparent text-slate-100 flex flex-col font-sans pb-28 md:pb-16 selection:bg-purple-600/30 selection:text-white">
       {/* 1. Global Top Navigation Bar */}
       <TopBar
         activeBroker={activeBroker}
         onOpenBrokerModal={() => setIsBrokerModalOpen(true)}
         marketType={marketType}
         onToggleMarketType={handleToggleMarketType}
-        soundMuted={soundMuted}
-        onToggleSound={() => setSoundMuted(sound.toggleMute())}
         onOpenProfileModal={() => setIsProfileModalOpen(true)}
+        activeTab={activeTab}
+        onSelectTab={(tab) => setActiveTab(tab)}
+        onOpenScanner={() => setIsScannerModalOpen(true)}
       />
 
       {/* Main Content Viewport */}
@@ -100,33 +93,38 @@ export default function App() {
                   signal={currentSignal}
                   pair={selectedPair}
                   onOpenPairModal={() => setIsPairModalOpen(true)}
-                  onAnalyzeNext={handleAnalyzeNext}
+                  onAnalyzeNext={() => handleAnalyzeNext()}
+                  onOpenScanner={() => setIsScannerModalOpen(true)}
                   isAnalyzing={isAnalyzing}
                   timeframe={timeframe}
                   onChangeTimeframe={(tf) => {
+                    // Prevent changing timeframe while signal is still running
+                    if (currentSignal && Date.now() < currentSignal.candleExpiryTime) {
+                      return;
+                    }
                     setTimeframe(tf);
-                    handleAnalyzeNext();
+                    handleAnalyzeNext(tf);
                   }}
                 />
               </div>
 
               {/* Right Column (Desktop & Tablet Enhanced View): Quick Watchlist & Live Stream & VIP Trader Info */}
               <div className="lg:col-span-5 xl:col-span-5 space-y-4 hidden lg:block">
-                {/* Rajon Chowdhury Brand Card */}
+                {/* RYN Ai & Owner - Rc Trader Brand Card */}
                 <div className="p-5 rounded-3xl bg-gradient-to-br from-red-950/40 via-[#1b1738]/40 to-[#12112a] border border-red-500/25 shadow-xl relative overflow-hidden backdrop-blur-xl">
                   <div className="flex items-center gap-3.5 mb-3">
                     <img
                       src="/assets/aistudio/image_7ba9cc3d.png"
-                      alt="Rajon Chowdhury"
+                      alt="RYN Ai - Owner - Rc Trader"
                       className="w-14 h-14 rounded-2xl object-cover ring-2 ring-red-500/80 shadow-lg"
                     />
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-base font-bold text-white">Rajon Chowdhury</span>
+                        <span className="text-base font-black text-white">RYN Ai</span>
                         <ShieldCheck className="w-4 h-4 text-emerald-400" />
                       </div>
                       <span className="text-xs text-red-400 font-bold tracking-wider uppercase block">
-                        RC TRADER BINARY BOT
+                        Owner - Rc Trader
                       </span>
                       <span className="text-[11px] text-slate-300">
                         Official Quotex & Pocket Option Signals
@@ -134,7 +132,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-center text-xs">
+                  <div className="grid grid-cols-2 gap-2 text-center text-xs mb-3">
                     <div className="p-2 rounded-xl bg-black/45 border border-white/5 shadow-inner">
                       <span className="text-slate-400 text-[10px] uppercase block font-semibold">Today Win Rate</span>
                       <span className="text-base font-black text-emerald-400 font-mono">94.2%</span>
@@ -144,6 +142,16 @@ export default function App() {
                       <span className="text-base font-black text-violet-300 font-mono">v3.8 PRO</span>
                     </div>
                   </div>
+
+                  <a
+                    href="https://t.me/RCTraderPublic"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-red-600/90 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-red-950/40 transition-all cursor-pointer group"
+                  >
+                    <span>JOIN VIP TELEGRAM: @RCTraderPublic</span>
+                    <span className="text-xs group-hover:translate-x-1 transition-transform">→</span>
+                  </a>
                 </div>
 
                 {/* Hot Assets Watchlist */}
@@ -269,8 +277,6 @@ export default function App() {
         {/* TAB 5: MORE / SETTINGS / RULES */}
         {activeTab === 'more' && (
           <MoreDrawer
-            soundMuted={soundMuted}
-            onToggleSound={() => setSoundMuted(sound.toggleMute())}
             onOpenProfile={() => setIsProfileModalOpen(true)}
           />
         )}
@@ -280,6 +286,7 @@ export default function App() {
       <BottomNav
         activeTab={activeTab}
         onSelectTab={(tab) => setActiveTab(tab)}
+        onOpenScanner={() => setIsScannerModalOpen(true)}
       />
 
       {/* Modals */}
@@ -301,6 +308,20 @@ export default function App() {
       <ProfileModal
         isOpen={isProfileModalOpen}
         onClose={() => setIsProfileModalOpen(false)}
+      />
+
+      {/* Intelligent AI Chart Screenshot Vision Scanner Modal */}
+      <ChartScannerModal
+        isOpen={isScannerModalOpen}
+        onClose={() => setIsScannerModalOpen(false)}
+        selectedPair={selectedPair}
+        activeBroker={activeBroker.name}
+        timeframe={timeframe}
+        onSignalGenerated={(newSignal) => {
+          setCurrentSignal(newSignal);
+          setSignalList((prev) => [newSignal, ...prev.filter((s) => s.id !== newSignal.id).slice(0, 7)]);
+          setActiveTab('analyzer');
+        }}
       />
     </div>
   );

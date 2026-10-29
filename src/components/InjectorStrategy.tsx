@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { sound } from '../utils/sound';
 import { Syringe, Calculator, ShieldAlert, CheckCircle, Zap } from 'lucide-react';
 
 interface InjectorStrategyProps {
@@ -14,7 +13,7 @@ export const InjectorStrategy: React.FC<InjectorStrategyProps> = ({ onApplyStrat
   const strategies = [
     {
       id: 'ai_neural',
-      name: 'RC AI Neural Trend',
+      name: 'RYN Neural Trend',
       accuracy: '94.6%',
       timeframes: '1m · 2m',
       desc: 'Order flow spikes & EMA crossovers.',
@@ -60,7 +59,6 @@ export const InjectorStrategy: React.FC<InjectorStrategyProps> = ({ onApplyStrat
               <div
                 key={strat.id}
                 onClick={() => {
-                  sound.playClick();
                   setActiveStrategy(strat.id);
                   onApplyStrategy(strat.name);
                 }}
@@ -109,7 +107,7 @@ export const InjectorStrategy: React.FC<InjectorStrategyProps> = ({ onApplyStrat
               Martingale Calculator
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              Maximum recommended: Step 1 or Step 2.
+              Owner: RC Trader Rule — Maximum recommended: Step 1 or Step 2.
             </p>
           </div>
 

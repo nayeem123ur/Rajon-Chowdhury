@@ -1,6 +1,5 @@
 import React from 'react';
 import { SignalData } from '../types/trading';
-import { sound } from '../utils/sound';
 import { Radio, ArrowUp, ArrowDown, Sparkles, Zap, Flame } from 'lucide-react';
 
 interface LiveSignalsFeedProps {
@@ -125,7 +124,6 @@ export const LiveSignalsFeed: React.FC<LiveSignalsFeedProps> = ({
 
                 <button
                   onClick={() => {
-                    sound.playClick();
                     onSelectSignal(sig);
                   }}
                   className="px-3.5 py-1.5 rounded-xl bg-violet-600/90 hover:bg-violet-600 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md shadow-violet-600/30 cursor-pointer active:scale-95"

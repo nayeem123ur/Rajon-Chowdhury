@@ -8,15 +8,21 @@
   
   body {
     font-family: var(--font-sans);
-    background-color: #080718;
+    background-color: #070614;
     background-image: 
-      radial-gradient(circle at 50% -20%, rgba(139, 92, 246, 0.25) 0%, transparent 60%),
-      radial-gradient(circle at 100% 40%, rgba(244, 63, 94, 0.12) 0%, transparent 50%),
-      radial-gradient(circle at 0% 70%, rgba(16, 185, 129, 0.12) 0%, transparent 50%),
-      radial-gradient(circle at 50% 120%, rgba(99, 102, 241, 0.15) 0%, transparent 60%);
+      radial-gradient(ellipse 80% 50% at 50% -15%, rgba(124, 58, 237, 0.22) 0%, transparent 70%),
+      radial-gradient(circle 600px at 95% 20%, rgba(225, 29, 72, 0.12) 0%, transparent 60%),
+      radial-gradient(circle 600px at 5% 75%, rgba(16, 185, 129, 0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 90% 40% at 50% 115%, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
     background-attachment: fixed;
-    color: #f1f5f9;
+    color: #f8fafc;
+    -webkit-tap-highlight-color: transparent;
   }
+}
+
+/* Safe area padding helper for modern smartphones */
+.pb-safe {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
 }
 
 /* Custom scrollbars */
@@ -135,3 +141,62 @@
 .animate-beacon {
   animation: beacon-expand 2.8s ease-in-out infinite;
 }
+
+/* Radar & Cyber HUD Animations */
+@keyframes radar-sweep-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-radar {
+  animation: radar-sweep-rotate 3.5s linear infinite;
+}
+
+@keyframes call-glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.4), inset 0 0 15px rgba(16, 185, 129, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 50px rgba(16, 185, 129, 0.75), inset 0 0 30px rgba(16, 185, 129, 0.4);
+  }
+}
+
+.glow-call-pulse {
+  animation: call-glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes put-glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 25px rgba(244, 63, 94, 0.4), inset 0 0 15px rgba(244, 63, 94, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 50px rgba(244, 63, 94, 0.75), inset 0 0 30px rgba(244, 63, 94, 0.4);
+  }
+}
+
+.glow-put-pulse {
+  animation: put-glow-pulse 2s ease-in-out infinite;
+}
+
+/* Colorful Rotating Border Animation around 4 sides */
+@keyframes border-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-border-rotate {
+  animation: border-rotate 4s linear infinite;
+}
+
+.animate-border-rotate-fast {
+  animation: border-rotate 1.4s linear infinite;
+}
+

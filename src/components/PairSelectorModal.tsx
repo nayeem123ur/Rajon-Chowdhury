@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { CurrencyPair, MarketType } from '../types/trading';
 import { CURRENCY_PAIRS } from '../utils/mockMarket';
-import { sound } from '../utils/sound';
 import { Search, X, Check, Flame, Globe } from 'lucide-react';
 
 interface PairSelectorModalProps {
@@ -50,10 +49,7 @@ export const PairSelectorModal: React.FC<PairSelectorModalProps> = ({
             </p>
           </div>
           <button
-            onClick={() => {
-              sound.playClick();
-              onClose();
-            }}
+            onClick={onClose}
             className="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
@@ -77,10 +73,7 @@ export const PairSelectorModal: React.FC<PairSelectorModalProps> = ({
             {(['ALL', 'OTC', 'REAL'] as const).map((type) => (
               <button
                 key={type}
-                onClick={() => {
-                  sound.playClick();
-                  setFilter(type);
-                }}
+                onClick={() => setFilter(type)}
                 className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   filter === type
                     ? 'bg-violet-600 text-white shadow-sm'
@@ -101,7 +94,6 @@ export const PairSelectorModal: React.FC<PairSelectorModalProps> = ({
               <button
                 key={pair.id}
                 onClick={() => {
-                  sound.playClick();
                   onSelectPair(pair);
                   onClose();
                 }}

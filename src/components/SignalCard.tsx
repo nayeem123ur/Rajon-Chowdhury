@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SignalData, CurrencyPair, Timeframe } from '../types/trading';
-import { sound } from '../utils/sound';
+import { TIMEFRAME_SECONDS, formatTimeRemaining } from '../utils/mockMarket';
 import {
   TrendingUp,
   TrendingDown,
@@ -15,6 +15,11 @@ import {
   BarChart2,
   Copy,
   Check,
+  Scan,
+  Camera,
+  Lock,
+  Timer,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface SignalCardProps {
@@ -22,6 +27,7 @@ interface SignalCardProps {
   pair: CurrencyPair;
   onOpenPairModal: () => void;
   onAnalyzeNext: () => void;
+  onOpenScanner?: () => void;
   isAnalyzing: boolean;
   timeframe: Timeframe;
   onChangeTimeframe: (tf: Timeframe) => void;
@@ -32,11 +38,15 @@ export const SignalCard: React.FC<SignalCardProps> = ({
   pair,
   onOpenPairModal,
   onAnalyzeNext,
+  onOpenScanner,
   isAnalyzing,
   timeframe,
   onChangeTimeframe,
 }) => {
-  const [secondsRemaining, setSecondsRemaining] = useState<number>(30);
+  const [secondsRemaining, setSecondsRemaining] = useState<number>(() => {
+    const diffMs = signal.candleExpiryTime - Date.now();
+    return diffMs > 0 ? Math.ceil(diffMs / 1000) : 0;
+  });
   const [copied, setCopied] = useState(false);
   const [displayConfidence, setDisplayConfidence] = useState<number>(signal.confidence);
 
@@ -62,29 +72,29 @@ export const SignalCard: React.FC<SignalCardProps> = ({
     return () => clearInterval(timer);
   }, [signal.id, signal.confidence]);
 
-  // Countdown timer for next candle entry
+  // Accurate countdown timer based on timeframe candle expiry
   useEffect(() => {
     const updateCountdown = () => {
       const now = Date.now();
       const diffMs = signal.candleExpiryTime - now;
       if (diffMs <= 0) {
-        setSecondsRemaining(60);
+        setSecondsRemaining(0);
       } else {
-        const secs = Math.ceil(diffMs / 1000) % 60;
-        setSecondsRemaining(secs === 0 ? 60 : secs);
+        const secs = Math.ceil(diffMs / 1000);
+        setSecondsRemaining(secs);
       }
     };
 
     updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
+    const interval = setInterval(updateCountdown, 250);
     return () => clearInterval(interval);
   }, [signal.candleExpiryTime]);
 
+  const isSignalActive = secondsRemaining > 0;
   const isCall = signal.direction === 'CALL';
 
   const handleCopy = () => {
-    sound.playClick();
-    const text = `🎯 Rajon Chowdhury Signal\n📊 ${signal.pairName}\n⏱ ${signal.timeframe}\n🧭 ${signal.direction}\n🔥 Confidence: ${signal.confidence}%\n🏢 ${signal.broker}`;
+    const text = `🎯 RYN Ai Signal (Owner - Rc Trader)\n📊 ${signal.pairName}\n⏱ ${signal.timeframe}\n🧭 ${signal.direction}\n🔥 Confidence: ${signal.confidence}%\n🏢 ${signal.broker}`;
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 1800);
@@ -95,9 +105,9 @@ export const SignalCard: React.FC<SignalCardProps> = ({
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (displayConfidence / 100) * circumference;
 
-  // Next candle progress circle
-  const candleMaxSecs = 60;
-  const candleProgress = ((candleMaxSecs - secondsRemaining) / candleMaxSecs) * 100;
+  // Next candle progress circle calculated exactly from total timeframe seconds
+  const candleMaxSecs = TIMEFRAME_SECONDS[signal.timeframe] || 60;
+  const candleProgress = Math.min(100, Math.max(0, ((candleMaxSecs - secondsRemaining) / candleMaxSecs) * 100));
 
   const timeframes: Timeframe[] = ['5s', '15s', '30s', '1m', '2m', '5m'];
 
@@ -115,10 +125,7 @@ export const SignalCard: React.FC<SignalCardProps> = ({
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 mb-4">
         {/* Pair Button */}
         <button
-          onClick={() => {
-            sound.playClick();
-            onOpenPairModal();
-          }}
+          onClick={onOpenPairModal}
           className="flex items-center gap-2.5 px-3 py-2 rounded-2xl bg-[#201e46]/80 hover:bg-[#292758] border border-violet-500/30 transition-all group text-left cursor-pointer shadow-sm active:scale-98"
         >
           {/* Pair flags */}
@@ -142,18 +149,26 @@ export const SignalCard: React.FC<SignalCardProps> = ({
         </button>
 
         {/* Timeframe pill selector with all standard binary options intervals */}
-        <div className="flex items-center justify-between sm:justify-start gap-1 p-1 rounded-2xl bg-[#14132e] border border-violet-500/20 shadow-inner overflow-x-auto">
+        <div className="flex items-center justify-between sm:justify-start gap-1 p-1 rounded-2xl bg-[#14132e] border border-violet-500/20 shadow-inner overflow-x-auto relative">
           {timeframes.map((tf) => (
             <button
               key={tf}
+              disabled={isSignalActive && timeframe !== tf}
               onClick={() => {
-                sound.playClick();
+                if (isSignalActive) return;
                 onChangeTimeframe(tf);
               }}
-              className={`px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer whitespace-nowrap active:scale-95 ${
+              title={
+                isSignalActive && timeframe !== tf
+                  ? `Active ${timeframe} signal in progress (${formatTimeRemaining(secondsRemaining)} left). Wait for expiry.`
+                  : `Select ${tf} timeframe`
+              }
+              className={`px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all whitespace-nowrap ${
                 timeframe === tf
-                  ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-600/40 glow-purple scale-100'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-600/40 glow-purple scale-100 cursor-default'
+                  : isSignalActive
+                  ? 'text-slate-600 opacity-40 cursor-not-allowed'
+                  : 'text-slate-400 hover:text-slate-200 cursor-pointer active:scale-95'
               }`}
             >
               {tf}
@@ -162,137 +177,168 @@ export const SignalCard: React.FC<SignalCardProps> = ({
         </div>
       </div>
 
-      {/* Central Hero Option Box (Exact match to screenshot with Premier Laser Scan Animation) */}
+      {/* Central Hero Option Box with Dynamic Rotating Colorful Border Animation around 4 sides */}
       <div
-        className={`w-full rounded-2xl p-4 sm:p-6 mb-4 sm:mb-5 transition-all duration-700 relative overflow-hidden border ${
-          isCall
-            ? 'bg-gradient-to-br from-[#093526]/90 via-[#0b271f]/85 to-[#0d1d24]/90 border-emerald-500/40 glow-call'
-            : 'bg-gradient-to-br from-[#3d111c]/90 via-[#2c0c14]/85 to-[#1d0d24]/90 border-rose-500/40 glow-put'
+        className={`w-full rounded-2xl p-[2px] mb-4 sm:mb-5 transition-all duration-700 relative overflow-hidden ${
+          isAnalyzing
+            ? 'shadow-[0_0_40px_rgba(139,92,246,0.7),0_0_80px_rgba(6,182,212,0.4)]'
+            : isCall
+            ? 'shadow-[0_0_30px_rgba(16,185,129,0.35)]'
+            : 'shadow-[0_0_30px_rgba(244,63,94,0.35)]'
         }`}
       >
-        {/* Holographic Laser Sweep Effect when scanning */}
-        {isAnalyzing && (
-          <div className="absolute inset-x-0 h-1.5 bg-gradient-to-r from-transparent via-cyan-300 to-transparent animate-laser z-20 shadow-[0_0_15px_#22d3ee]" />
-        )}
+        {/* Continuous Dynamic Colorful Rotating Gradient Beam around all 4 sides */}
+        <div className="absolute -inset-[200%] pointer-events-none flex items-center justify-center">
+          <div
+            className={`w-[400%] h-[400%] ${
+              isAnalyzing ? 'animate-border-rotate-fast' : 'animate-border-rotate'
+            }`}
+            style={{
+              background:
+                'conic-gradient(from 0deg, #ec4899, #8b5cf6, #06b6d4, #10b981, #eab308, #ef4444, #8b5cf6, #ec4899)',
+            }}
+          />
+        </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
-            {/* Luminous Circular Action Icon matching screenshot with animated beacon ring */}
-            <div className="relative shrink-0">
-              <div
-                className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center border-2 shadow-2xl transition-all duration-500 ${
-                  isCall
-                    ? 'border-emerald-400/80 bg-gradient-to-tr from-emerald-950 via-emerald-800 to-emerald-600 shadow-emerald-500/40'
-                    : 'border-rose-400/80 bg-gradient-to-tr from-rose-950 via-rose-800 to-rose-600 shadow-rose-500/40'
-                }`}
-              >
-                {/* Nested inner circle icon */}
+        {/* Inner Card Content Container */}
+        <div
+          className={`w-full rounded-[14px] p-4 sm:p-6 relative z-10 overflow-hidden transition-colors duration-700 ${
+            isCall
+              ? 'bg-gradient-to-br from-[#093526]/95 via-[#0b271f]/92 to-[#0d1d24]/95'
+              : 'bg-gradient-to-br from-[#3d111c]/95 via-[#2c0c14]/92 to-[#1d0d24]/95'
+          }`}
+        >
+          {/* Holographic Laser Sweep Effect when scanning */}
+          {isAnalyzing && (
+            <div className="absolute inset-x-0 h-1.5 bg-gradient-to-r from-transparent via-cyan-300 to-transparent animate-laser z-20 shadow-[0_0_20px_#22d3ee]" />
+          )}
+
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
+              {/* Luminous Circular Action Icon */}
+              <div className="relative shrink-0">
                 <div
-                  className={`w-11 h-11 sm:w-14 sm:h-14 rounded-full flex items-center justify-center border transition-all ${
+                  className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center border-2 shadow-2xl transition-all duration-500 ${
                     isCall
-                      ? 'border-emerald-300/60 bg-emerald-500/25 shadow-inner'
-                      : 'border-rose-300/60 bg-rose-500/25 shadow-inner'
+                      ? 'border-emerald-400/80 bg-gradient-to-tr from-emerald-950 via-emerald-800 to-emerald-600 shadow-emerald-500/40'
+                      : 'border-rose-400/80 bg-gradient-to-tr from-rose-950 via-rose-800 to-rose-600 shadow-rose-500/40'
                   }`}
                 >
-                  {isCall ? (
-                    <ArrowUp className="w-7 h-7 sm:w-8 sm:h-8 text-emerald-300 stroke-[2.8] animate-bounce" />
-                  ) : (
-                    <ArrowDown className="w-7 h-7 sm:w-8 sm:h-8 text-rose-300 stroke-[2.8] animate-bounce" />
-                  )}
+                  <div
+                    className={`w-11 h-11 sm:w-14 sm:h-14 rounded-full flex items-center justify-center border transition-all ${
+                      isCall
+                        ? 'border-emerald-300/60 bg-emerald-500/25 shadow-inner'
+                        : 'border-rose-300/60 bg-rose-500/25 shadow-inner'
+                    }`}
+                  >
+                    {isCall ? (
+                      <ArrowUp className="w-7 h-7 sm:w-8 sm:h-8 text-emerald-300 stroke-[2.8] animate-bounce" />
+                    ) : (
+                      <ArrowDown className="w-7 h-7 sm:w-8 sm:h-8 text-rose-300 stroke-[2.8] animate-bounce" />
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              {/* Pulsing beacon radar */}
-              <div
-                className={`absolute inset-0 rounded-full animate-ping opacity-25 pointer-events-none ${
-                  isCall ? 'bg-emerald-400' : 'bg-rose-400'
-                }`}
-              />
-            </div>
-
-            {/* Typography */}
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span
-                  className={`w-4 h-0.5 rounded-full ${
-                    isCall ? 'bg-emerald-400 shadow-[0_0_8px_#34d399]' : 'bg-rose-400 shadow-[0_0_8px_#fb7185]'
+                {/* Pulsing beacon radar */}
+                <div
+                  className={`absolute inset-0 rounded-full animate-ping opacity-25 pointer-events-none ${
+                    isCall ? 'bg-emerald-400' : 'bg-rose-400'
                   }`}
                 />
-                <span className="text-[10px] sm:text-xs font-bold tracking-wider text-slate-300 uppercase">
-                  PLACE OPTION
-                </span>
               </div>
-              <h1
-                className={`text-4xl sm:text-5xl font-black tracking-tight leading-none mt-1 ${
-                  isCall
-                    ? 'text-transparent bg-clip-text bg-gradient-to-r from-emerald-100 via-emerald-300 to-teal-200 drop-shadow-[0_0_25px_rgba(16,185,129,0.4)]'
-                    : 'text-transparent bg-clip-text bg-gradient-to-r from-rose-100 via-rose-300 to-red-200 drop-shadow-[0_0_25px_rgba(244,63,94,0.4)]'
+
+              {/* Typography */}
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`w-4 h-0.5 rounded-full ${
+                      isCall ? 'bg-emerald-400 shadow-[0_0_8px_#34d399]' : 'bg-rose-400 shadow-[0_0_8px_#fb7185]'
+                    }`}
+                  />
+                  <span className="text-[10px] sm:text-xs font-bold tracking-wider text-slate-300 uppercase">
+                    PLACE OPTION
+                  </span>
+                </div>
+                <h1
+                  className={`text-4xl sm:text-5xl font-black tracking-tight leading-none mt-1 ${
+                    isCall
+                      ? 'text-transparent bg-clip-text bg-gradient-to-r from-emerald-100 via-emerald-300 to-teal-200 drop-shadow-[0_0_25px_rgba(16,185,129,0.4)]'
+                      : 'text-transparent bg-clip-text bg-gradient-to-r from-rose-100 via-rose-300 to-red-200 drop-shadow-[0_0_25px_rgba(244,63,94,0.4)]'
+                  }`}
+                >
+                  {signal.direction}
+                </h1>
+                <p className="text-xs sm:text-sm text-slate-300 mt-1 font-medium leading-tight">
+                  {signal.message}
+                </p>
+              </div>
+            </div>
+
+            {/* Candle countdown timer & copy action */}
+            <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-2.5 pt-2.5 sm:pt-0 border-t sm:border-t-0 border-white/10 shrink-0">
+              <div
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl backdrop-blur-md border font-mono text-xs sm:text-sm font-bold shadow-inner transition-all ${
+                  isSignalActive
+                    ? 'bg-amber-950/40 border-amber-500/40 text-amber-300'
+                    : 'bg-emerald-950/40 border-emerald-500/30 text-emerald-400'
                 }`}
               >
-                {signal.direction}
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-300 mt-1 font-medium leading-tight">
-                {signal.message}
-              </p>
-            </div>
-          </div>
-
-          {/* Candle countdown timer & copy action with animated radial indicator */}
-          <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-2.5 pt-2.5 sm:pt-0 border-t sm:border-t-0 border-white/10 shrink-0">
-            {/* Countdown Badge */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 text-white font-mono text-xs sm:text-sm font-bold shadow-inner">
-              <div className="relative w-4 h-4 flex items-center justify-center">
-                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                  <path
-                    className="stroke-slate-700"
-                    strokeWidth="4"
-                    fill="none"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                  <path
-                    className="stroke-violet-400 transition-all duration-1000 ease-linear"
-                    strokeWidth="4"
-                    strokeDasharray={`${candleProgress}, 100`}
-                    strokeLinecap="round"
-                    fill="none"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                </svg>
+                <div className="relative w-4 h-4 flex items-center justify-center shrink-0">
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                    <path
+                      className="stroke-slate-700/60"
+                      strokeWidth="4"
+                      fill="none"
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                    <path
+                      className={`${
+                        isSignalActive ? 'stroke-amber-400' : 'stroke-emerald-400'
+                      } transition-all duration-300 ease-linear`}
+                      strokeWidth="4"
+                      strokeDasharray={`${candleProgress}, 100`}
+                      strokeLinecap="round"
+                      fill="none"
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                  </svg>
+                </div>
+                <span>
+                  {isSignalActive ? formatTimeRemaining(secondsRemaining) : '00:00 (EXPIRED)'}
+                </span>
               </div>
-              <span>00:{secondsRemaining < 10 ? `0${secondsRemaining}` : secondsRemaining}s</span>
-            </div>
 
-            <button
-              onClick={handleCopy}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-slate-200 text-xs font-semibold transition-all cursor-pointer border border-white/5"
-            >
-              {copied ? (
-                <>
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-emerald-300 font-bold">Copied</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3.5 h-3.5 text-slate-300" />
-                  <span>Copy</span>
-                </>
-              )}
-            </button>
+              <button
+                onClick={handleCopy}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-slate-200 text-xs font-semibold transition-all cursor-pointer border border-white/5"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span className="text-emerald-300 font-bold">Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5 text-slate-300" />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Two-Column Core Metrics: Confidence & Key Levels (Exact match to screenshot) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
-        {/* Card 1: CONFIDENCE with animated SVG ring */}
-        <div className="rounded-2xl bg-[#171638]/90 border border-violet-500/20 p-4 sm:p-5 flex flex-col items-center justify-between text-center relative overflow-hidden shadow-inner group">
-          <div className="w-full flex items-center justify-between text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1">
+      {/* Two-Column Core Metrics: Confidence & Key Levels (2-column layout matching mobile screenshot) */}
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 mb-3 sm:mb-4">
+        {/* Card 1: CONFIDENCE */}
+        <div className="rounded-2xl bg-[#171638]/90 border border-violet-500/20 p-3 sm:p-5 flex flex-col items-center justify-between text-center relative overflow-hidden shadow-inner group">
+          <div className="w-full flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1">
             <span>CONFIDENCE</span>
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400 animate-spin-slow" />
+            <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400 animate-spin-slow shrink-0" />
           </div>
 
-          {/* SVG Circular Progress Ring matching screenshot */}
-          <div className="relative w-28 h-28 my-1 flex items-center justify-center">
+          <div className="relative w-20 h-20 sm:w-28 sm:h-28 my-1 flex items-center justify-center">
             <svg className="w-full h-full transform -rotate-90 filter drop-shadow-[0_0_12px_rgba(16,185,129,0.3)]" viewBox="0 0 100 100">
               <circle
                 cx="50"
@@ -315,80 +361,74 @@ export const SignalCard: React.FC<SignalCardProps> = ({
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center font-mono">
-              <span className="text-2xl font-black text-white">{displayConfidence}%</span>
+              <span className="text-xl sm:text-2xl font-black text-white">{displayConfidence}%</span>
             </div>
           </div>
 
-          <div className="mt-1">
-            <p className="text-xs sm:text-sm font-bold text-emerald-400 flex items-center justify-center gap-1">
+          <div className="mt-1 w-full">
+            <p className="text-xs sm:text-sm font-bold text-emerald-400 flex items-center justify-center gap-1 truncate">
               <span>High conviction</span>
             </p>
-            <p className="text-[11px] text-slate-400 mt-0.5 font-medium">
+            <p className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 font-medium truncate">
               Trade threshold {signal.tradeThreshold}%
             </p>
           </div>
         </div>
 
-        {/* Card 2: KEY LEVELS Price Ladder (Exact match to screenshot) */}
-        <div className="rounded-2xl bg-[#171638]/90 border border-violet-500/20 p-4 sm:p-5 flex flex-col justify-between shadow-inner">
-          <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1">
+        {/* Card 2: KEY LEVELS Price Ladder */}
+        <div className="rounded-2xl bg-[#171638]/90 border border-violet-500/20 p-3 sm:p-5 flex flex-col justify-between shadow-inner">
+          <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1">
             <span>KEY LEVELS</span>
-            <BarChart2 className="w-3.5 h-3.5 text-violet-400" />
+            <BarChart2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-violet-400 shrink-0" />
           </div>
 
-          {/* Vertical ladder gauge with glowing dot */}
-          <div className="flex items-center gap-4 py-2">
-            <div className="relative h-24 w-1.5 rounded-full bg-slate-800 flex flex-col justify-between items-center py-0.5 shrink-0">
-              <div className="w-3 h-1 rounded-sm bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.9)]" />
-              {/* Glowing translucent circle + solid center dot matching screenshot */}
+          <div className="flex items-center gap-2.5 sm:gap-4 py-1.5 sm:py-2">
+            <div className="relative h-20 sm:h-24 w-1.5 rounded-full bg-slate-800 flex flex-col justify-between items-center py-0.5 shrink-0">
+              <div className="w-2.5 sm:w-3 h-1 rounded-sm bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.9)]" />
               <div
-                className="absolute w-6 h-6 rounded-full bg-violet-600/35 border border-violet-400/40 flex items-center justify-center transition-all duration-700 shadow-[0_0_15px_rgba(139,92,246,0.6)]"
+                className="absolute w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-violet-600/35 border border-violet-400/40 flex items-center justify-center transition-all duration-700 shadow-[0_0_15px_rgba(139,92,246,0.6)]"
                 style={{
                   top: `${100 - signal.levels.priceZonePercent}%`,
                   transform: 'translateY(-50%)',
                 }}
               >
-                <div className="w-2.5 h-2.5 rounded-full bg-white shadow-md shadow-white" />
+                <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-white shadow-md shadow-white" />
               </div>
-              <div className="w-3 h-1 rounded-sm bg-rose-400 shadow-[0_0_10px_rgba(244,63,94,0.9)]" />
+              <div className="w-2.5 sm:w-3 h-1 rounded-sm bg-rose-400 shadow-[0_0_10px_rgba(244,63,94,0.9)]" />
             </div>
 
-            {/* Labels beside ladder */}
-            <div className="flex flex-col justify-between h-24 w-full">
-              {/* Resistance */}
+            <div className="flex flex-col justify-between h-20 sm:h-24 w-full min-w-0">
               <div>
-                <span className="text-[10px] font-bold tracking-wider text-emerald-400 uppercase block">
+                <span className="text-[9px] sm:text-[10px] font-bold tracking-wider text-emerald-400 uppercase block">
                   RESISTANCE
                 </span>
-                <span className="text-sm font-mono font-bold text-white truncate block">
+                <span className="text-xs sm:text-sm font-mono font-bold text-white truncate block">
                   {signal.levels.resistance}
                 </span>
               </div>
 
-              {/* Price Zone */}
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] tracking-wider text-slate-400 uppercase font-semibold">
-                  PRICE ZONE
+              <div className="flex items-center gap-1.5">
+                <span className="text-[9px] sm:text-[10px] tracking-wider text-slate-400 uppercase font-semibold">
+                  ZONE
                 </span>
-                <span className="text-[10px] font-mono font-bold text-violet-300">
+                <span className="text-[9px] sm:text-[10px] font-mono font-bold text-violet-300">
                   {signal.levels.priceZonePercent}%
                 </span>
               </div>
 
-              {/* Support */}
               <div>
-                <span className="text-[10px] font-bold tracking-wider text-rose-400 uppercase block">
+                <span className="text-[9px] sm:text-[10px] font-bold tracking-wider text-rose-400 uppercase block">
                   SUPPORT
                 </span>
-                <span className="text-sm font-mono font-bold text-white block">
+                <span className="text-xs sm:text-sm font-mono font-bold text-white truncate block">
                   {signal.levels.support}
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="text-[11px] text-slate-400 text-right mt-1 font-mono">
-            <span>RSI(14): </span>
+          <div className="text-[10px] sm:text-[11px] text-slate-400 text-right mt-1 font-mono truncate">
+            <span>RSI: </span>
             <span className="font-bold text-slate-200">
               {signal.levels.rsi} · {signal.levels.macd}
             </span>
@@ -396,7 +436,7 @@ export const SignalCard: React.FC<SignalCardProps> = ({
         </div>
       </div>
 
-      {/* Bottom Indicators Row: TREND and PATTERN (Exact match to screenshot) */}
+      {/* Bottom Indicators Row: TREND and PATTERN */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4">
         {/* Trend */}
         <div className="rounded-2xl bg-[#171638]/90 border border-violet-500/20 p-3 sm:p-4 flex items-center gap-3">
@@ -433,27 +473,64 @@ export const SignalCard: React.FC<SignalCardProps> = ({
         </div>
       </div>
 
-      {/* Motion Graphics Action Trigger */}
-      <button
-        onClick={() => {
-          sound.playScanBeep();
-          onAnalyzeNext();
-        }}
-        disabled={isAnalyzing}
-        className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-extrabold text-sm sm:text-base tracking-wide shadow-xl shadow-violet-600/35 glow-analyzer flex items-center justify-center gap-2.5 transition-all transform active:scale-[0.98] disabled:opacity-75 cursor-pointer"
-      >
-        {isAnalyzing ? (
-          <>
-            <Activity className="w-5 h-5 animate-spin text-white" />
-            <span>Scanning Orderbook & Candles...</span>
-          </>
-        ) : (
-          <>
-            <Zap className="w-5 h-5 text-amber-300 fill-amber-300 animate-bounce" />
-            <span>ANALYZE MARKET & GET SIGNAL</span>
-          </>
+      {/* Action Buttons: Auto-Analyzer with Strict Expiry Lock and Screenshot Scanner */}
+      <div className="space-y-2.5">
+        <button
+          onClick={onAnalyzeNext}
+          disabled={isAnalyzing || isSignalActive}
+          className={`w-full py-3.5 sm:py-4 px-6 rounded-2xl font-black text-sm sm:text-base tracking-wider flex items-center justify-center gap-2.5 transition-all transform ${
+            isAnalyzing
+              ? 'bg-violet-800/80 text-white cursor-wait opacity-90'
+              : isSignalActive
+              ? 'bg-[#181636] border border-amber-500/35 text-slate-300 cursor-not-allowed shadow-inner select-none'
+              : 'bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white shadow-xl shadow-violet-600/35 glow-analyzer active:scale-[0.98] cursor-pointer'
+          }`}
+        >
+          {isAnalyzing ? (
+            <>
+              <Activity className="w-5 h-5 animate-spin text-white" />
+              <span>Analyzing Market...</span>
+            </>
+          ) : isSignalActive ? (
+            <>
+              <Lock className="w-5 h-5 text-amber-400 animate-pulse" />
+              <div className="flex items-center gap-2">
+                <span className="text-amber-300 font-bold">SIGNAL ACTIVE</span>
+                <span className="text-white text-xs sm:text-sm font-mono bg-black/50 px-2.5 py-0.5 rounded-lg border border-amber-500/30">
+                  WAIT {formatTimeRemaining(secondsRemaining)}
+                </span>
+              </div>
+            </>
+          ) : (
+            <>
+              <Zap className="w-5 h-5 text-amber-300 fill-amber-300 animate-bounce" />
+              <span>GENERATE NEXT SIGNAL</span>
+            </>
+          )}
+        </button>
+
+        {/* Informational lock banner during active candle */}
+        {isSignalActive && (
+          <div className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-[11px] sm:text-xs text-amber-200 text-center font-medium animate-pulse">
+            <Lock className="w-3.5 h-3.5 shrink-0 text-amber-400" />
+            <span>
+              {signal.timeframe} Candle in progress · Next signal unlocks in{' '}
+              <strong className="font-mono text-white underline font-bold">{formatTimeRemaining(secondsRemaining)}</strong>
+            </span>
+          </div>
         )}
-      </button>
+
+        {onOpenScanner && (
+          <button
+            onClick={onOpenScanner}
+            type="button"
+            className="w-full py-3 px-5 rounded-2xl bg-[#141232]/80 hover:bg-[#1c1945] border border-cyan-500/35 hover:border-cyan-400 text-cyan-300 hover:text-white font-bold text-xs sm:text-sm tracking-wide shadow-lg shadow-cyan-950/40 flex items-center justify-center gap-2 transition-all transform active:scale-[0.98] cursor-pointer group"
+          >
+            <Scan className="w-4 h-4 text-cyan-300 group-hover:scale-110 transition-transform" />
+            <span>SCAN CHART SCREENSHOT</span>
+          </button>
+        )}
+      </div>
     </div>
   );
 };

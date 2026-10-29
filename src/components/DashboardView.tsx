@@ -1,5 +1,4 @@
 import React from 'react';
-import { sound } from '../utils/sound';
 import {
   TrendingUp,
   CheckCircle2,
@@ -7,8 +6,6 @@ import {
   Zap,
   Send,
   Clock,
-  Award,
-  Users,
 } from 'lucide-react';
 
 interface DashboardViewProps {
@@ -36,15 +33,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="flex flex-col sm:flex-row items-center justify-between gap-5 relative z-10">
           <div className="flex items-center gap-4 text-center sm:text-left">
             <button
-              onClick={() => {
-                sound.playClick();
-                onOpenProfile();
-              }}
+              onClick={onOpenProfile}
               className="relative shrink-0 group cursor-pointer"
             >
               <img
                 src="/assets/aistudio/image_7ba9cc3d.png"
-                alt="Rajon Chowdhury"
+                alt="RYN Ai - Owner: RC Trader"
                 className="w-18 h-18 sm:w-22 sm:h-22 rounded-2xl object-cover ring-2 ring-red-500 shadow-xl group-hover:scale-105 transition-transform"
               />
               <div className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-emerald-500 text-white border-2 border-[#12112a]">
@@ -54,36 +48,32 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
             <div>
               <div className="flex items-center justify-center sm:justify-start gap-2">
-                <span className="text-xl sm:text-2xl font-black text-white">Rajon Chowdhury</span>
+                <span className="text-xl sm:text-2xl font-black text-white">RYN Ai</span>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/20 text-red-300 border border-red-500/40">
-                  RC TRADER VIP
+                  Owner - Rc Trader
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-md">
-                Official Quotex & Pocket Option Market Scanner. Real-time accuracy is monitored live.
+              <p className="text-xs text-slate-300 mt-1 font-medium">
+                Official AI binary market scanner · 24/7 high-conviction OTC feeds
               </p>
 
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mt-3">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-3">
                 <button
-                  onClick={() => {
-                    sound.playScanBeep();
-                    onGoToAnalyzer();
-                  }}
-                  className="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs shadow-md shadow-violet-600/30 flex items-center gap-1.5 transition-all cursor-pointer"
+                  onClick={onGoToAnalyzer}
+                  className="px-3.5 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs shadow-md shadow-violet-600/30 flex items-center gap-1.5 transition-all cursor-pointer"
                 >
                   <Zap className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
                   <span>Launch Analyzer</span>
                 </button>
 
                 <a
-                  href="https://t.me"
+                  href="https://t.me/RCTraderPublic"
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={() => sound.playWin()}
-                  className="px-4 py-2 rounded-xl bg-[#1d1b3d] hover:bg-[#282552] border border-red-500/30 text-white font-bold text-xs flex items-center gap-1.5 transition-all"
+                  className="px-3.5 py-1.5 rounded-xl bg-[#1d1b3d] hover:bg-[#282552] border border-red-500/30 text-white font-bold text-xs flex items-center gap-1.5 transition-all"
                 >
                   <Send className="w-3.5 h-3.5 text-red-400" />
-                  <span>VIP Telegram</span>
+                  <span>VIP Telegram: @RCTraderPublic</span>
                 </a>
               </div>
             </div>
@@ -135,7 +125,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         <div className="p-4 rounded-3xl bg-[#171638]/90 border border-violet-500/20 backdrop-blur-xl">
           <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-            VIP Traders
+            VIP Community
           </div>
           <div className="text-2xl font-black text-amber-400 font-mono mt-1">28,500+</div>
           <div className="text-[11px] text-slate-400 mt-1 font-semibold">

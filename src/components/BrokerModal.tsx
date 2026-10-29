@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrokerInfo } from '../types/trading';
 import { BROKERS } from '../utils/mockMarket';
-import { sound } from '../utils/sound';
 import { X, Check, ShieldCheck, Zap } from 'lucide-react';
 
 interface BrokerModalProps {
@@ -33,15 +32,12 @@ export const BrokerModal: React.FC<BrokerModalProps> = ({
                 Select Binary Broker
               </h3>
               <p className="text-xs text-slate-400 mt-0.5">
-                Rajon Chowdhury Verified Platform Partners
+                RYN Ai Verified Platform Partners
               </p>
             </div>
           </div>
           <button
-            onClick={() => {
-              sound.playClick();
-              onClose();
-            }}
+            onClick={onClose}
             className="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
@@ -56,7 +52,6 @@ export const BrokerModal: React.FC<BrokerModalProps> = ({
               <div
                 key={broker.id}
                 onClick={() => {
-                  sound.playClick();
                   onSelectBroker(broker);
                   onClose();
                 }}

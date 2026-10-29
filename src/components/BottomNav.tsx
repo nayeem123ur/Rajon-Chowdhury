@@ -1,5 +1,4 @@
 import React from 'react';
-import { sound } from '../utils/sound';
 import { LayoutGrid, Radio, Scan, Syringe, Menu } from 'lucide-react';
 
 export type TabKey = 'dashboard' | 'live' | 'analyzer' | 'injector' | 'more';
@@ -7,9 +6,14 @@ export type TabKey = 'dashboard' | 'live' | 'analyzer' | 'injector' | 'more';
 interface BottomNavProps {
   activeTab: TabKey;
   onSelectTab: (tab: TabKey) => void;
+  onOpenScanner: () => void;
 }
 
-export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onSelectTab }) => {
+export const BottomNav: React.FC<BottomNavProps> = ({
+  activeTab,
+  onSelectTab,
+  onOpenScanner,
+}) => {
   return (
     <div className="fixed bottom-0 inset-x-0 z-40 pb-safe pointer-events-none">
       <div className="max-w-md md:max-w-lg mx-auto px-3 pb-3">
@@ -18,10 +22,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onSelectTab }) 
           
           {/* 1. Dashboard */}
           <button
-            onClick={() => {
-              sound.playClick();
-              onSelectTab('dashboard');
-            }}
+            onClick={() => onSelectTab('dashboard')}
             className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all cursor-pointer min-w-[48px] ${
               activeTab === 'dashboard'
                 ? 'text-violet-400'
@@ -36,10 +37,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onSelectTab }) 
 
           {/* 2. Live */}
           <button
-            onClick={() => {
-              sound.playClick();
-              onSelectTab('live');
-            }}
+            onClick={() => onSelectTab('live')}
             className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all cursor-pointer min-w-[48px] relative ${
               activeTab === 'live'
                 ? 'text-violet-400'
@@ -55,36 +53,25 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onSelectTab }) 
             </span>
           </button>
 
-          {/* 3. Analyzer (Center raised floating luminous button from screenshot!) */}
+          {/* 3. Center Scanner Button (Direct Chart Screenshot Upload Trigger) */}
           <div className="relative -mt-6">
             <button
               onClick={() => {
-                sound.playScanBeep();
                 onSelectTab('analyzer');
+                onOpenScanner();
               }}
+              title="Click to Upload Chart Screenshot & Generate Signal"
               className="group relative flex flex-col items-center justify-center cursor-pointer"
             >
-              {/* Outer glowing halo */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 blur-lg opacity-80 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 blur-lg opacity-85 group-hover:opacity-100 transition-opacity" />
 
-              {/* Main Button */}
-              <div
-                className={`relative w-14 h-14 rounded-2xl p-0.5 flex flex-col items-center justify-center shadow-2xl transition-transform active:scale-95 ${
-                  activeTab === 'analyzer'
-                    ? 'bg-gradient-to-tr from-violet-500 via-fuchsia-500 to-indigo-500 ring-2 ring-white/40'
-                    : 'bg-gradient-to-tr from-violet-700 via-purple-700 to-indigo-800'
-                }`}
-              >
+              <div className="relative w-14 h-14 rounded-2xl p-0.5 flex flex-col items-center justify-center shadow-2xl transition-transform active:scale-95 bg-gradient-to-tr from-violet-500 via-fuchsia-500 to-indigo-500 ring-2 ring-white/50">
                 <div className="w-full h-full rounded-[14px] bg-[#1a1438] flex flex-col items-center justify-center">
                   <Scan className="w-6 h-6 text-white animate-pulse" />
                 </div>
               </div>
 
-              <span
-                className={`text-[10px] font-extrabold tracking-tight mt-1 transition-colors ${
-                  activeTab === 'analyzer' ? 'text-violet-300' : 'text-slate-400'
-                }`}
-              >
+              <span className="text-[10px] font-extrabold tracking-tight mt-1 text-violet-300">
                 Analyzer
               </span>
             </button>
@@ -92,10 +79,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onSelectTab }) 
 
           {/* 4. Injector */}
           <button
-            onClick={() => {
-              sound.playClick();
-              onSelectTab('injector');
-            }}
+            onClick={() => onSelectTab('injector')}
             className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all cursor-pointer min-w-[48px] ${
               activeTab === 'injector'
                 ? 'text-violet-400'
@@ -110,10 +94,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onSelectTab }) 
 
           {/* 5. More */}
           <button
-            onClick={() => {
-              sound.playClick();
-              onSelectTab('more');
-            }}
+            onClick={() => onSelectTab('more')}
             className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all cursor-pointer min-w-[48px] ${
               activeTab === 'more'
                 ? 'text-violet-400'
