@@ -19,26 +19,26 @@ export const BrokerModal: React.FC<BrokerModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="w-full max-w-lg rounded-3xl bg-[#14152e] border border-violet-500/30 shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="w-full max-w-lg rounded-3xl bg-[#130104] border border-red-500/35 shadow-2xl shadow-red-950/80 overflow-hidden flex flex-col max-h-[85vh]">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-violet-900/30 flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b border-red-900/30 flex items-center justify-between bg-[#0e0002]/80">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-violet-600/30 border border-violet-500/30 flex items-center justify-center text-violet-300">
-              <Zap className="w-5 h-5 text-violet-400" />
+            <div className="w-9 h-9 rounded-xl bg-red-600/30 border border-red-500/30 flex items-center justify-center text-rose-300">
+              <Zap className="w-5 h-5 text-rose-400" />
             </div>
             <div>
               <h3 className="text-base sm:text-lg font-bold text-white">
                 Select Binary Broker
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-red-200/60 mt-0.5">
                 RYN Ai Verified Platform Partners
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-full bg-black/60 hover:bg-black/90 text-red-300/80 hover:text-white flex items-center justify-center transition-colors border border-red-500/30 cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -57,8 +57,8 @@ export const BrokerModal: React.FC<BrokerModalProps> = ({
                 }}
                 className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between group ${
                   isSelected
-                    ? 'bg-violet-900/35 border-violet-500 shadow-lg shadow-violet-950/40 ring-1 ring-violet-500/50'
-                    : 'bg-[#181935]/70 hover:bg-[#1f2042] border-violet-500/15'
+                    ? 'bg-red-950/60 border-red-500 shadow-lg shadow-red-950/60 ring-1 ring-red-500/50'
+                    : 'bg-[#180205]/75 hover:bg-[#250409] border-red-500/15'
                 }`}
               >
                 <div className="flex items-center gap-3.5">
@@ -70,14 +70,14 @@ export const BrokerModal: React.FC<BrokerModalProps> = ({
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-white text-base group-hover:text-violet-300">
+                      <span className="font-bold text-white text-base group-hover:text-red-300">
                         {broker.name}
                       </span>
-                      <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-violet-950/80 text-violet-300 border border-violet-500/25">
+                      <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-red-950/80 text-rose-300 border border-red-500/25">
                         {broker.badge}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400 mt-1">{broker.tagline}</p>
+                    <p className="text-xs text-red-200/60 mt-1">{broker.tagline}</p>
                   </div>
                 </div>
 
@@ -86,12 +86,12 @@ export const BrokerModal: React.FC<BrokerModalProps> = ({
                     <span className="text-xs font-mono font-bold text-emerald-400 block">
                       {broker.avgPayout}% Avg Payout
                     </span>
-                    <span className="text-[10px] text-slate-400 block">
+                    <span className="text-[10px] text-red-300/60 block">
                       {broker.otcSupported ? 'OTC 24/7 Available' : 'Real Market Only'}
                     </span>
                   </div>
                   {isSelected && (
-                    <div className="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-red-600/50">
                       <Check className="w-3.5 h-3.5" />
                     </div>
                   )}
@@ -102,12 +102,12 @@ export const BrokerModal: React.FC<BrokerModalProps> = ({
         </div>
 
         {/* Footer info */}
-        <div className="p-4 border-t border-violet-900/20 bg-[#101124] text-xs text-slate-400 flex items-center justify-between">
+        <div className="p-4 border-t border-red-900/30 bg-[#0e0002] text-xs text-red-200/60 flex items-center justify-between">
           <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
             <ShieldCheck className="w-4 h-4" />
             All Signal Algorithms Synced
           </span>
-          <span className="text-[11px] font-mono text-slate-400">RC Trader Engine v3.8</span>
+          <span className="text-[11px] font-mono text-red-300/70">RC Trader Engine v3.8</span>
         </div>
       </div>
     </div>

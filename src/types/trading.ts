@@ -48,6 +48,11 @@ export interface SignalData {
   tradeThreshold: number;
   status: 'ACTIVE' | 'WON' | 'LOST' | 'PENDING';
   message: string;
+  source?: 'Auto AI' | 'Chart Vision Scanner';
+  baseFlag?: string;
+  quoteFlag?: string;
+  payout?: number;
+  profit?: string;
 }
 
 export interface BrokerInfo {

@@ -9,9 +9,10 @@ import {
   LayoutGrid,
   Radio,
   Scan,
-  Syringe,
+  History,
   Menu,
   TrendingUp,
+  Lock,
 } from 'lucide-react';
 
 interface TopBarProps {
@@ -23,6 +24,7 @@ interface TopBarProps {
   activeTab?: TabKey;
   onSelectTab?: (tab: TabKey) => void;
   onOpenScanner?: () => void;
+  onLockBot?: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -34,6 +36,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   activeTab = 'analyzer',
   onSelectTab,
   onOpenScanner,
+  onLockBot,
 }) => {
   const [timeString, setTimeString] = useState<string>('');
 
@@ -58,18 +61,18 @@ export const TopBar: React.FC<TopBarProps> = ({
     { key: 'dashboard', label: 'Dashboard', icon: <LayoutGrid className="w-4 h-4" /> },
     { key: 'live', label: 'Live Stream', icon: <Radio className="w-4 h-4" /> },
     { key: 'analyzer', label: 'AI Analyzer', icon: <Scan className="w-4 h-4" /> },
-    { key: 'injector', label: 'Injector', icon: <Syringe className="w-4 h-4" /> },
+    { key: 'history', label: 'History', icon: <History className="w-4 h-4" /> },
     { key: 'more', label: 'More', icon: <Menu className="w-4 h-4" /> },
   ];
 
   return (
-    <header className="sticky top-0 z-30 w-full px-2 sm:px-6 py-2 bg-[#070614]/90 backdrop-blur-2xl border-b border-violet-500/20 shadow-lg shadow-black/40">
+    <header className="sticky top-0 z-30 w-full px-2 sm:px-6 py-2 bg-[#080103]/95 backdrop-blur-2xl border-b border-red-600/30 shadow-lg shadow-red-950/50">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-1.5 sm:gap-4">
         {/* Left: Dedicated Quotex Broker Option */}
         <div className="flex items-center shrink-0">
           <button
             type="button"
-            className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-2xl bg-[#151435] border border-violet-500/25 shadow-sm text-left group transition-all"
+            className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-2xl bg-[#150205] border border-red-500/30 shadow-sm text-left group transition-all hover:border-red-500/60"
           >
             {/* Official Quotex Logo on White Squircle */}
             <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-white flex items-center justify-center p-1 shadow-md shrink-0 ring-1 ring-white/20 transition-transform group-hover:scale-105">
@@ -82,7 +85,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               </svg>
             </div>
             <div className="flex flex-col">
-              <span className="text-[8px] sm:text-[9px] tracking-wider text-slate-400 uppercase font-semibold">
+              <span className="text-[8px] sm:text-[9px] tracking-wider text-red-300/70 uppercase font-semibold">
                 BROKER
               </span>
               <span className="text-xs sm:text-sm font-bold text-white tracking-wide">
@@ -94,7 +97,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
         {/* Desktop Navigation Links (Visible on Laptop / Desktop / Tablet) */}
         {onSelectTab && (
-          <nav className="hidden xl:flex items-center gap-1 bg-[#12112e]/90 p-1 rounded-2xl border border-violet-500/20 shadow-inner">
+          <nav className="hidden xl:flex items-center gap-1 bg-[#130205]/90 p-1 rounded-2xl border border-red-500/25 shadow-inner">
             {navLinks.map((item) => {
               const isActive = activeTab === item.key;
               return (
@@ -103,8 +106,8 @@ export const TopBar: React.FC<TopBarProps> = ({
                   onClick={() => onSelectTab(item.key)}
                   className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-600/40 glow-purple'
-                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                      ? 'bg-gradient-to-r from-red-600 to-rose-700 text-white shadow-md shadow-red-600/50 glow-red'
+                      : 'text-red-200/70 hover:text-white hover:bg-white/5'
                   }`}
                 >
                   {item.icon}
@@ -118,22 +121,22 @@ export const TopBar: React.FC<TopBarProps> = ({
         {/* Center / Brand Logo: RYN Ai & Owner - Rc Trader */}
         <button
           onClick={onOpenProfileModal}
-          className="flex items-center gap-1.5 sm:gap-2.5 px-2 sm:px-3.5 py-1.5 rounded-2xl bg-gradient-to-r from-red-950/60 via-[#1b1738]/50 to-[#12112a]/60 border border-red-500/35 hover:border-red-500/60 transition-all text-left cursor-pointer active:scale-95 shadow-md shadow-red-950/30 shrink-0"
+          className="flex items-center gap-1.5 sm:gap-2.5 px-2 sm:px-3.5 py-1.5 rounded-2xl bg-gradient-to-r from-red-950/80 via-[#220308]/80 to-[#120103]/85 border border-red-500/40 hover:border-red-500/80 transition-all text-left cursor-pointer active:scale-95 shadow-md shadow-red-950/50 shrink-0 group"
         >
           <div className="relative shrink-0">
             <img
-              src="/assets/aistudio/image_7ba9cc3d.png"
+              src="/assets/aistudio/image_0a428df5.png"
               alt="RYN Ai - Owner - Rc Trader"
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover ring-2 ring-red-500/80 shadow-md shadow-red-500/30"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover ring-2 ring-red-500/90 shadow-md shadow-red-500/40 group-hover:scale-105 transition-transform"
             />
-            <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-emerald-500 rounded-full border-2 border-[#0a091e] animate-pulse"></span>
+            <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-[#0a0103] animate-pulse"></span>
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1">
               <span className="text-xs sm:text-sm font-black text-white tracking-wide whitespace-nowrap">
                 RYN Ai
               </span>
-              <ShieldCheck className="w-3.5 h-3.5 text-red-400 shrink-0" />
+              <ShieldCheck className="w-3.5 h-3.5 text-rose-400 shrink-0" />
             </div>
             <span className="text-[8px] sm:text-[10px] font-bold text-red-400 tracking-wider">
               Owner - Rc Trader
@@ -141,39 +144,50 @@ export const TopBar: React.FC<TopBarProps> = ({
           </div>
         </button>
 
-        {/* Right: Live Market Clock + OTC/Real Segmented Toggle */}
+        {/* Right: Live Market Clock + OTC/Real Segmented Toggle + Lock Button */}
         <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           {/* Live Market Time Clock */}
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#14132e] border border-violet-500/20 text-slate-300 font-mono text-xs shadow-inner">
-            <Clock className="w-3.5 h-3.5 text-violet-400 animate-spin-slow" />
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#130205] border border-red-500/25 text-red-200 font-mono text-xs shadow-inner">
+            <Clock className="w-3.5 h-3.5 text-rose-400 animate-spin-slow" />
             <span className="font-semibold">{timeString || '00:00:00'}</span>
           </div>
 
           {/* Segmented OTC / Real Toggle */}
-          <div className="flex items-center p-0.5 sm:p-1 rounded-2xl bg-[#14132e] border border-violet-500/20 shadow-inner">
+          <div className="flex items-center p-0.5 sm:p-1 rounded-2xl bg-[#130205] border border-red-500/25 shadow-inner">
             <button
               onClick={() => onToggleMarketType('OTC')}
               className={`px-2 sm:px-3 py-1 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1 transition-all cursor-pointer ${
                 marketType === 'OTC'
-                  ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-600/40 glow-purple scale-100'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-gradient-to-r from-red-600 to-rose-700 text-white shadow-md shadow-red-600/50 glow-red scale-100'
+                  : 'text-red-300/70 hover:text-white'
               }`}
             >
-              <Sparkles className="w-3 h-3 text-violet-200" />
+              <Sparkles className="w-3 h-3 text-rose-200" />
               OTC
             </button>
             <button
               onClick={() => onToggleMarketType('Real')}
               className={`px-2 sm:px-3 py-1 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1 transition-all cursor-pointer ${
                 marketType === 'Real'
-                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-600/40 scale-100'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-gradient-to-r from-red-800 to-rose-900 text-white shadow-md shadow-red-800/40 scale-100 border border-red-500/30'
+                  : 'text-red-300/70 hover:text-white'
               }`}
             >
-              <TrendingUp className="w-3 h-3 text-emerald-200" />
+              <TrendingUp className="w-3 h-3 text-red-200" />
               Real
             </button>
           </div>
+
+          {/* Quick Lock Bot Button */}
+          {onLockBot && (
+            <button
+              onClick={onLockBot}
+              title="Lock Bot (লক করুন)"
+              className="p-1.5 sm:p-2 rounded-xl bg-[#130205] hover:bg-red-950/70 border border-red-500/30 text-rose-300 hover:text-white transition-all cursor-pointer shadow-inner active:scale-95"
+            >
+              <Lock className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       </div>
     </header>

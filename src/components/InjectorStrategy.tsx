@@ -46,9 +46,9 @@ export const InjectorStrategy: React.FC<InjectorStrategyProps> = ({ onApplyStrat
   return (
     <div className="space-y-5">
       {/* 1. Algorithmic Strategy Presets */}
-      <div className="rounded-3xl bg-[#171638]/90 border border-violet-500/20 p-5 backdrop-blur-xl">
+      <div className="rounded-3xl bg-[#140205]/90 border border-red-500/25 p-5 backdrop-blur-xl shadow-xl shadow-red-950/40">
         <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
-          <Zap className="w-4 h-4 text-amber-400" />
+          <Zap className="w-4 h-4 text-rose-400" />
           Algorithm Presets
         </h3>
 
@@ -64,16 +64,16 @@ export const InjectorStrategy: React.FC<InjectorStrategyProps> = ({ onApplyStrat
                 }}
                 className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
                   isSelected
-                    ? 'bg-gradient-to-b from-violet-900/40 to-[#1f1e42] border-violet-500 ring-2 ring-violet-500/40 shadow-lg'
-                    : 'bg-[#1a193b]/70 hover:bg-[#22214d] border-violet-500/15'
+                    ? 'bg-gradient-to-b from-red-950/60 to-[#1e0307] border-red-500 ring-2 ring-red-500/40 shadow-lg shadow-red-950/60'
+                    : 'bg-[#180205]/70 hover:bg-[#250409] border-red-500/15'
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
                       {strat.accuracy} Accuracy
                     </span>
-                    <span className="text-[10px] font-mono text-slate-400">
+                    <span className="text-[10px] font-mono text-red-300/60">
                       {strat.timeframes}
                     </span>
                   </div>
@@ -81,13 +81,13 @@ export const InjectorStrategy: React.FC<InjectorStrategyProps> = ({ onApplyStrat
                   <h4 className="text-sm font-bold text-white mb-1">
                     {strat.name}
                   </h4>
-                  <p className="text-xs text-slate-400 leading-snug">
+                  <p className="text-xs text-red-200/60 leading-snug">
                     {strat.desc}
                   </p>
                 </div>
 
-                <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-violet-300">
+                <div className="mt-3 pt-3 border-t border-red-500/15 flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-rose-300">
                     {isSelected ? 'Active' : 'Apply'}
                   </span>
                   {isSelected && <CheckCircle className="w-4 h-4 text-emerald-400" />}
@@ -99,22 +99,22 @@ export const InjectorStrategy: React.FC<InjectorStrategyProps> = ({ onApplyStrat
       </div>
 
       {/* 2. Martingale Risk Management Calculator */}
-      <div className="rounded-3xl bg-[#171638]/90 border border-violet-500/20 p-5 backdrop-blur-xl">
+      <div className="rounded-3xl bg-[#140205]/90 border border-red-500/25 p-5 backdrop-blur-xl shadow-xl shadow-red-950/40">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
           <div>
             <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
               <Calculator className="w-4 h-4 text-emerald-400" />
               Martingale Calculator
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-red-200/60 mt-0.5">
               Owner: RC Trader Rule — Maximum recommended: Step 1 or Step 2.
             </p>
           </div>
 
           {/* Quick inputs */}
           <div className="flex items-center gap-2.5">
-            <div className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#14132e] border border-violet-500/20">
-              <span className="text-xs text-slate-400">$</span>
+            <div className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#1c0307] border border-red-500/25">
+              <span className="text-xs text-red-300/60">$</span>
               <input
                 type="number"
                 min="1"
@@ -124,8 +124,8 @@ export const InjectorStrategy: React.FC<InjectorStrategyProps> = ({ onApplyStrat
               />
             </div>
 
-            <div className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#14132e] border border-violet-500/20">
-              <span className="text-xs text-slate-400">%</span>
+            <div className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#1c0307] border border-red-500/25">
+              <span className="text-xs text-red-300/60">%</span>
               <input
                 type="number"
                 min="50"
@@ -142,21 +142,21 @@ export const InjectorStrategy: React.FC<InjectorStrategyProps> = ({ onApplyStrat
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-violet-900/30 text-slate-400 font-bold uppercase text-[10px]">
+              <tr className="border-b border-red-900/30 text-red-300/70 font-bold uppercase text-[10px]">
                 <th className="pb-2">Level</th>
                 <th className="pb-2">Trade</th>
                 <th className="pb-2">Cumulative Risk</th>
                 <th className="pb-2 text-right">Net Profit</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-violet-900/20 font-mono">
+            <tbody className="divide-y divide-red-900/20 font-mono">
               <tr>
                 <td className="py-2.5 font-bold text-white flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-400" />
                   Step 0
                 </td>
                 <td className="py-2.5 text-slate-200">${step1}</td>
-                <td className="py-2.5 text-slate-400">${step1}</td>
+                <td className="py-2.5 text-red-300/70">${step1}</td>
                 <td className="py-2.5 text-right font-black text-emerald-400">+${profitStep1}</td>
               </tr>
               <tr>
@@ -165,16 +165,16 @@ export const InjectorStrategy: React.FC<InjectorStrategyProps> = ({ onApplyStrat
                   Step 1
                 </td>
                 <td className="py-2.5 text-slate-200">${step2}</td>
-                <td className="py-2.5 text-slate-400">${step1 + step2}</td>
+                <td className="py-2.5 text-red-300/70">${step1 + step2}</td>
                 <td className="py-2.5 text-right font-black text-emerald-400">+${profitStep2}</td>
               </tr>
               <tr>
                 <td className="py-2.5 font-bold text-rose-400 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-rose-400" />
+                  <span className="w-2 h-2 rounded-full bg-rose-500" />
                   Step 2
                 </td>
                 <td className="py-2.5 text-slate-200">${step3}</td>
-                <td className="py-2.5 text-slate-400">${step1 + step2 + step3}</td>
+                <td className="py-2.5 text-red-300/70">${step1 + step2 + step3}</td>
                 <td className="py-2.5 text-right font-black text-emerald-400">+${profitStep3}</td>
               </tr>
             </tbody>

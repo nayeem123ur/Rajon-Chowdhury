@@ -20,6 +20,8 @@ import {
   Lock,
   Timer,
   CheckCircle2,
+  History,
+  ChevronUp,
 } from 'lucide-react';
 
 interface SignalCardProps {
@@ -31,6 +33,9 @@ interface SignalCardProps {
   isAnalyzing: boolean;
   timeframe: Timeframe;
   onChangeTimeframe: (tf: Timeframe) => void;
+  signalHistory?: SignalData[];
+  onSelectHistorySignal?: (sig: SignalData) => void;
+  onViewFullHistory?: () => void;
 }
 
 export const SignalCard: React.FC<SignalCardProps> = ({
@@ -42,6 +47,9 @@ export const SignalCard: React.FC<SignalCardProps> = ({
   isAnalyzing,
   timeframe,
   onChangeTimeframe,
+  signalHistory,
+  onSelectHistorySignal,
+  onViewFullHistory,
 }) => {
   const [secondsRemaining, setSecondsRemaining] = useState<number>(() => {
     const diffMs = signal.candleExpiryTime - Date.now();
@@ -112,21 +120,21 @@ export const SignalCard: React.FC<SignalCardProps> = ({
   const timeframes: Timeframe[] = ['5s', '15s', '30s', '1m', '2m', '5m'];
 
   return (
-    <div className="w-full rounded-[30px] bg-gradient-to-b from-[#1b193d]/95 via-[#13122c]/98 to-[#0d0c22] border border-violet-500/25 shadow-2xl p-4 sm:p-6 backdrop-blur-2xl relative overflow-hidden transition-all">
-      {/* Background ambient lighting */}
+    <div className="w-full rounded-[30px] bg-gradient-to-b from-[#1c0307]/95 via-[#130205]/98 to-[#0a0102] border border-red-600/35 shadow-2xl shadow-red-950/70 p-4 sm:p-6 backdrop-blur-2xl relative overflow-hidden transition-all">
+      {/* Background ambient lighting - Blood Red Vampire Aura */}
       <div
-        className={`absolute -top-32 -right-32 w-80 h-80 rounded-full blur-3xl opacity-25 pointer-events-none transition-all duration-1000 ${
-          isCall ? 'bg-emerald-500' : 'bg-rose-500'
+        className={`absolute -top-32 -right-32 w-80 h-80 rounded-full blur-3xl opacity-30 pointer-events-none transition-all duration-1000 ${
+          isCall ? 'bg-emerald-600' : 'bg-red-600'
         }`}
       />
-      <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full blur-3xl opacity-20 bg-violet-600 pointer-events-none" />
+      <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full blur-3xl opacity-25 bg-rose-700 pointer-events-none" />
 
       {/* Top Header: Pair selector and live read badge */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 mb-4">
         {/* Pair Button */}
         <button
           onClick={onOpenPairModal}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-2xl bg-[#201e46]/80 hover:bg-[#292758] border border-violet-500/30 transition-all group text-left cursor-pointer shadow-sm active:scale-98"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-2xl bg-[#1d0307]/85 hover:bg-[#28050b] border border-red-500/30 transition-all group text-left cursor-pointer shadow-sm active:scale-98"
         >
           {/* Pair flags */}
           <div className="flex items-center -space-x-1.5 shrink-0">
@@ -136,20 +144,20 @@ export const SignalCard: React.FC<SignalCardProps> = ({
 
           <div className="flex flex-col min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
-              <span className="text-sm sm:text-base font-bold text-white tracking-wide group-hover:text-violet-300 truncate">
+              <span className="text-sm sm:text-base font-bold text-white tracking-wide group-hover:text-red-300 truncate">
                 {pair.name}
               </span>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-transform shrink-0" />
+              <ChevronDown className="w-3.5 h-3.5 text-red-300/60 group-hover:text-white transition-transform shrink-0" />
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <div className="flex items-center gap-1.5 text-[11px] text-red-300/70">
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shrink-0" />
               <span className="truncate font-medium">Live read · {timeframe}</span>
             </div>
           </div>
         </button>
 
         {/* Timeframe pill selector with all standard binary options intervals */}
-        <div className="flex items-center justify-between sm:justify-start gap-1 p-1 rounded-2xl bg-[#14132e] border border-violet-500/20 shadow-inner overflow-x-auto relative">
+        <div className="flex items-center justify-between sm:justify-start gap-1 p-1 rounded-2xl bg-[#120104] border border-red-500/25 shadow-inner overflow-x-auto relative">
           {timeframes.map((tf) => (
             <button
               key={tf}
@@ -165,10 +173,10 @@ export const SignalCard: React.FC<SignalCardProps> = ({
               }
               className={`px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all whitespace-nowrap ${
                 timeframe === tf
-                  ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-600/40 glow-purple scale-100 cursor-default'
+                  ? 'bg-gradient-to-r from-red-600 to-rose-700 text-white shadow-md shadow-red-600/50 glow-red scale-100 cursor-default'
                   : isSignalActive
-                  ? 'text-slate-600 opacity-40 cursor-not-allowed'
-                  : 'text-slate-400 hover:text-slate-200 cursor-pointer active:scale-95'
+                  ? 'text-red-900/60 opacity-40 cursor-not-allowed'
+                  : 'text-red-300/60 hover:text-white cursor-pointer active:scale-95'
               }`}
             >
               {tf}
@@ -177,17 +185,17 @@ export const SignalCard: React.FC<SignalCardProps> = ({
         </div>
       </div>
 
-      {/* Central Hero Option Box with Dynamic Rotating Colorful Border Animation around 4 sides */}
+      {/* Central Hero Option Box with Dynamic Rotating Vampire Blood Red Border Animation around 4 sides */}
       <div
         className={`w-full rounded-2xl p-[2px] mb-4 sm:mb-5 transition-all duration-700 relative overflow-hidden ${
           isAnalyzing
-            ? 'shadow-[0_0_40px_rgba(139,92,246,0.7),0_0_80px_rgba(6,182,212,0.4)]'
+            ? 'shadow-[0_0_40px_rgba(255,23,68,0.7),0_0_80px_rgba(220,38,38,0.5)]'
             : isCall
             ? 'shadow-[0_0_30px_rgba(16,185,129,0.35)]'
-            : 'shadow-[0_0_30px_rgba(244,63,94,0.35)]'
+            : 'shadow-[0_0_35px_rgba(239,68,68,0.5)]'
         }`}
       >
-        {/* Continuous Dynamic Colorful Rotating Gradient Beam around all 4 sides */}
+        {/* Continuous Dynamic Blood-Red Rotating Gradient Beam around all 4 sides */}
         <div className="absolute -inset-[200%] pointer-events-none flex items-center justify-center">
           <div
             className={`w-[400%] h-[400%] ${
@@ -195,7 +203,7 @@ export const SignalCard: React.FC<SignalCardProps> = ({
             }`}
             style={{
               background:
-                'conic-gradient(from 0deg, #ec4899, #8b5cf6, #06b6d4, #10b981, #eab308, #ef4444, #8b5cf6, #ec4899)',
+                'conic-gradient(from 0deg, #ff0033, #dc2626, #7f1d1d, #ff1744, #991b1b, #ef4444, #b91c1c, #ff0033)',
             }}
           />
         </div>
@@ -204,8 +212,8 @@ export const SignalCard: React.FC<SignalCardProps> = ({
         <div
           className={`w-full rounded-[14px] p-4 sm:p-6 relative z-10 overflow-hidden transition-colors duration-700 ${
             isCall
-              ? 'bg-gradient-to-br from-[#093526]/95 via-[#0b271f]/92 to-[#0d1d24]/95'
-              : 'bg-gradient-to-br from-[#3d111c]/95 via-[#2c0c14]/92 to-[#1d0d24]/95'
+              ? 'bg-gradient-to-br from-[#120407]/95 via-[#0d0205]/92 to-[#090103]/95 border border-emerald-500/30'
+              : 'bg-gradient-to-br from-[#2a040a]/95 via-[#1d0206]/92 to-[#120103]/95 border border-rose-500/40'
           }`}
         >
           {/* Holographic Laser Sweep Effect when scanning */}
@@ -329,22 +337,22 @@ export const SignalCard: React.FC<SignalCardProps> = ({
         </div>
       </div>
 
-      {/* Two-Column Core Metrics: Confidence & Key Levels (2-column layout matching mobile screenshot) */}
+      {/* Two-Column Core Metrics: Confidence & Key Levels (Vampire Blood Red Edition) */}
       <div className="grid grid-cols-2 gap-2.5 sm:gap-4 mb-3 sm:mb-4">
         {/* Card 1: CONFIDENCE */}
-        <div className="rounded-2xl bg-[#171638]/90 border border-violet-500/20 p-3 sm:p-5 flex flex-col items-center justify-between text-center relative overflow-hidden shadow-inner group">
-          <div className="w-full flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1">
+        <div className="rounded-2xl bg-[#170206]/90 border border-red-500/30 p-3 sm:p-5 flex flex-col items-center justify-between text-center relative overflow-hidden shadow-inner group">
+          <div className="w-full flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-red-300/70 tracking-wider uppercase mb-1">
             <span>CONFIDENCE</span>
-            <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400 animate-spin-slow shrink-0" />
+            <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-rose-400 animate-spin-slow shrink-0" />
           </div>
 
           <div className="relative w-20 h-20 sm:w-28 sm:h-28 my-1 flex items-center justify-center">
-            <svg className="w-full h-full transform -rotate-90 filter drop-shadow-[0_0_12px_rgba(16,185,129,0.3)]" viewBox="0 0 100 100">
+            <svg className="w-full h-full transform -rotate-90 filter drop-shadow-[0_0_12px_rgba(225,29,72,0.4)]" viewBox="0 0 100 100">
               <circle
                 cx="50"
                 cy="50"
                 r={radius}
-                className="stroke-[#25244f]"
+                className="stroke-[#2c040b]"
                 strokeWidth="7"
                 fill="transparent"
               />
@@ -352,7 +360,7 @@ export const SignalCard: React.FC<SignalCardProps> = ({
                 cx="50"
                 cy="50"
                 r={radius}
-                className="stroke-emerald-400 transition-all duration-700 ease-out"
+                className="stroke-rose-500 transition-all duration-700 ease-out"
                 strokeWidth="7"
                 strokeDasharray={circumference}
                 strokeDashoffset={strokeDashoffset}
@@ -366,27 +374,27 @@ export const SignalCard: React.FC<SignalCardProps> = ({
           </div>
 
           <div className="mt-1 w-full">
-            <p className="text-xs sm:text-sm font-bold text-emerald-400 flex items-center justify-center gap-1 truncate">
+            <p className="text-xs sm:text-sm font-bold text-rose-400 flex items-center justify-center gap-1 truncate">
               <span>High conviction</span>
             </p>
-            <p className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 font-medium truncate">
+            <p className="text-[10px] sm:text-[11px] text-red-300/70 mt-0.5 font-medium truncate">
               Trade threshold {signal.tradeThreshold}%
             </p>
           </div>
         </div>
 
         {/* Card 2: KEY LEVELS Price Ladder */}
-        <div className="rounded-2xl bg-[#171638]/90 border border-violet-500/20 p-3 sm:p-5 flex flex-col justify-between shadow-inner">
-          <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1">
+        <div className="rounded-2xl bg-[#170206]/90 border border-red-500/30 p-3 sm:p-5 flex flex-col justify-between shadow-inner">
+          <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-red-300/70 tracking-wider uppercase mb-1">
             <span>KEY LEVELS</span>
-            <BarChart2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-violet-400 shrink-0" />
+            <BarChart2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-rose-400 shrink-0" />
           </div>
 
           <div className="flex items-center gap-2.5 sm:gap-4 py-1.5 sm:py-2">
-            <div className="relative h-20 sm:h-24 w-1.5 rounded-full bg-slate-800 flex flex-col justify-between items-center py-0.5 shrink-0">
+            <div className="relative h-20 sm:h-24 w-1.5 rounded-full bg-slate-900 flex flex-col justify-between items-center py-0.5 shrink-0">
               <div className="w-2.5 sm:w-3 h-1 rounded-sm bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.9)]" />
               <div
-                className="absolute w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-violet-600/35 border border-violet-400/40 flex items-center justify-center transition-all duration-700 shadow-[0_0_15px_rgba(139,92,246,0.6)]"
+                className="absolute w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-red-600/40 border border-red-400/60 flex items-center justify-center transition-all duration-700 shadow-[0_0_15px_rgba(239,68,68,0.7)]"
                 style={{
                   top: `${100 - signal.levels.priceZonePercent}%`,
                   transform: 'translateY(-50%)',
@@ -394,7 +402,7 @@ export const SignalCard: React.FC<SignalCardProps> = ({
               >
                 <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-white shadow-md shadow-white" />
               </div>
-              <div className="w-2.5 sm:w-3 h-1 rounded-sm bg-rose-400 shadow-[0_0_10px_rgba(244,63,94,0.9)]" />
+              <div className="w-2.5 sm:w-3 h-1 rounded-sm bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.9)]" />
             </div>
 
             <div className="flex flex-col justify-between h-20 sm:h-24 w-full min-w-0">
@@ -408,10 +416,10 @@ export const SignalCard: React.FC<SignalCardProps> = ({
               </div>
 
               <div className="flex items-center gap-1.5">
-                <span className="text-[9px] sm:text-[10px] tracking-wider text-slate-400 uppercase font-semibold">
+                <span className="text-[9px] sm:text-[10px] tracking-wider text-red-300/70 uppercase font-semibold">
                   ZONE
                 </span>
-                <span className="text-[9px] sm:text-[10px] font-mono font-bold text-violet-300">
+                <span className="text-[9px] sm:text-[10px] font-mono font-bold text-rose-300">
                   {signal.levels.priceZonePercent}%
                 </span>
               </div>
@@ -427,63 +435,26 @@ export const SignalCard: React.FC<SignalCardProps> = ({
             </div>
           </div>
 
-          <div className="text-[10px] sm:text-[11px] text-slate-400 text-right mt-1 font-mono truncate">
+          <div className="text-[10px] sm:text-[11px] text-red-300/70 text-right mt-1 font-mono truncate">
             <span>RSI: </span>
-            <span className="font-bold text-slate-200">
+            <span className="font-bold text-white">
               {signal.levels.rsi} · {signal.levels.macd}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Bottom Indicators Row: TREND and PATTERN */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4">
-        {/* Trend */}
-        <div className="rounded-2xl bg-[#171638]/90 border border-violet-500/20 p-3 sm:p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-violet-950/60 border border-violet-500/30 flex items-center justify-center text-violet-300 shrink-0">
-            {isCall ? (
-              <TrendingUp className="w-5 h-5 text-emerald-400" />
-            ) : (
-              <TrendingDown className="w-5 h-5 text-rose-400" />
-            )}
-          </div>
-          <div className="flex flex-col truncate">
-            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-              TREND
-            </span>
-            <span className="text-xs sm:text-sm font-bold text-white truncate">
-              {signal.levels.trend}
-            </span>
-          </div>
-        </div>
-
-        {/* Pattern */}
-        <div className="rounded-2xl bg-[#171638]/90 border border-violet-500/20 p-3 sm:p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-violet-950/60 border border-violet-500/30 flex items-center justify-center text-violet-300 shrink-0">
-            <Layers className="w-5 h-5 text-violet-300" />
-          </div>
-          <div className="flex flex-col truncate">
-            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-              PATTERN
-            </span>
-            <span className="text-xs sm:text-sm font-bold text-white truncate">
-              {signal.levels.pattern}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Action Buttons: Auto-Analyzer with Strict Expiry Lock and Screenshot Scanner */}
+      {/* Action Buttons: Auto-Analyzer with Strict Expiry Lock */}
       <div className="space-y-2.5">
         <button
           onClick={onAnalyzeNext}
           disabled={isAnalyzing || isSignalActive}
           className={`w-full py-3.5 sm:py-4 px-6 rounded-2xl font-black text-sm sm:text-base tracking-wider flex items-center justify-center gap-2.5 transition-all transform ${
             isAnalyzing
-              ? 'bg-violet-800/80 text-white cursor-wait opacity-90'
+              ? 'bg-red-900/90 text-white cursor-wait opacity-90'
               : isSignalActive
-              ? 'bg-[#181636] border border-amber-500/35 text-slate-300 cursor-not-allowed shadow-inner select-none'
-              : 'bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white shadow-xl shadow-violet-600/35 glow-analyzer active:scale-[0.98] cursor-pointer'
+              ? 'bg-[#180307] border border-red-500/40 text-red-200 cursor-not-allowed shadow-inner select-none'
+              : 'bg-gradient-to-r from-red-600 via-rose-600 to-red-800 hover:from-red-500 hover:to-rose-500 text-white shadow-xl shadow-red-950/70 glow-analyzer active:scale-[0.98] cursor-pointer'
           }`}
         >
           {isAnalyzing ? (
@@ -493,10 +464,10 @@ export const SignalCard: React.FC<SignalCardProps> = ({
             </>
           ) : isSignalActive ? (
             <>
-              <Lock className="w-5 h-5 text-amber-400 animate-pulse" />
+              <Lock className="w-5 h-5 text-rose-400 animate-pulse" />
               <div className="flex items-center gap-2">
-                <span className="text-amber-300 font-bold">SIGNAL ACTIVE</span>
-                <span className="text-white text-xs sm:text-sm font-mono bg-black/50 px-2.5 py-0.5 rounded-lg border border-amber-500/30">
+                <span className="text-rose-300 font-bold">SIGNAL ACTIVE</span>
+                <span className="text-white text-xs sm:text-sm font-mono bg-black/60 px-2.5 py-0.5 rounded-lg border border-red-500/40">
                   WAIT {formatTimeRemaining(secondsRemaining)}
                 </span>
               </div>
@@ -511,24 +482,13 @@ export const SignalCard: React.FC<SignalCardProps> = ({
 
         {/* Informational lock banner during active candle */}
         {isSignalActive && (
-          <div className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-[11px] sm:text-xs text-amber-200 text-center font-medium animate-pulse">
-            <Lock className="w-3.5 h-3.5 shrink-0 text-amber-400" />
+          <div className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-red-950/40 border border-red-500/30 text-[11px] sm:text-xs text-red-200 text-center font-medium animate-pulse">
+            <Lock className="w-3.5 h-3.5 shrink-0 text-rose-400" />
             <span>
               {signal.timeframe} Candle in progress · Next signal unlocks in{' '}
               <strong className="font-mono text-white underline font-bold">{formatTimeRemaining(secondsRemaining)}</strong>
             </span>
           </div>
-        )}
-
-        {onOpenScanner && (
-          <button
-            onClick={onOpenScanner}
-            type="button"
-            className="w-full py-3 px-5 rounded-2xl bg-[#141232]/80 hover:bg-[#1c1945] border border-cyan-500/35 hover:border-cyan-400 text-cyan-300 hover:text-white font-bold text-xs sm:text-sm tracking-wide shadow-lg shadow-cyan-950/40 flex items-center justify-center gap-2 transition-all transform active:scale-[0.98] cursor-pointer group"
-          >
-            <Scan className="w-4 h-4 text-cyan-300 group-hover:scale-110 transition-transform" />
-            <span>SCAN CHART SCREENSHOT</span>
-          </button>
         )}
       </div>
     </div>

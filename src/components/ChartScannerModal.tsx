@@ -188,16 +188,16 @@ export const ChartScannerModal: React.FC<ChartScannerModalProps> = ({
   const isCall = scanResult?.direction === 'CALL';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-2xl animate-in fade-in duration-200">
-      <div className="w-full max-w-xl rounded-3xl bg-gradient-to-b from-[#18153b] via-[#111029] to-[#0a091a] border border-violet-500/35 shadow-2xl overflow-hidden flex flex-col max-h-[92vh] relative">
-        {/* Ambient atmospheric glows */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-violet-600/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-fuchsia-600/15 rounded-full blur-3xl pointer-events-none" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-200">
+      <div className="w-full max-w-xl rounded-3xl bg-gradient-to-b from-[#1c0307] via-[#110103] to-[#090002] border border-red-500/40 shadow-2xl shadow-red-950/80 overflow-hidden flex flex-col max-h-[92vh] relative">
+        {/* Ambient atmospheric red vampire glows */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-red-600/30 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-rose-700/20 rounded-full blur-3xl pointer-events-none" />
 
         {/* Modal Header */}
-        <div className="p-4 sm:p-5 border-b border-violet-900/30 flex items-center justify-between relative z-10 bg-[#0d0c22]/60">
+        <div className="p-4 sm:p-5 border-b border-red-900/40 flex items-center justify-between relative z-10 bg-[#0e0103]/80">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-violet-600 via-fuchsia-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-violet-600/40">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-red-600 via-rose-600 to-red-800 flex items-center justify-center text-white shadow-lg shadow-red-600/50">
               <Scan className="w-5 h-5 animate-pulse" />
             </div>
             <div>
@@ -205,11 +205,11 @@ export const ChartScannerModal: React.FC<ChartScannerModalProps> = ({
                 <h3 className="text-base sm:text-lg font-black text-white tracking-wide">
                   RYN Ai Chart Vision
                 </h3>
-                <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase font-mono tracking-wider">
+                <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 uppercase font-mono tracking-wider">
                   AI HUD SCANNER
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-red-200/60">
                 Quotex, Pocket Option, TradingView Candlestick Scanner
               </p>
             </div>
@@ -220,7 +220,7 @@ export const ChartScannerModal: React.FC<ChartScannerModalProps> = ({
               handleReset();
               onClose();
             }}
-            className="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-full bg-black/60 hover:bg-black/90 text-red-300/80 hover:text-white flex items-center justify-center transition-colors border border-red-500/30 cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -229,9 +229,9 @@ export const ChartScannerModal: React.FC<ChartScannerModalProps> = ({
         {/* Modal Body */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 relative z-10">
           {/* Rejection Notice Banner */}
-          <div className="px-3.5 py-2.5 rounded-2xl bg-[#1b1536]/80 border border-violet-500/30 flex items-center gap-2.5 text-xs">
-            <ShieldAlert className="w-4 h-4 text-cyan-400 shrink-0" />
-            <span className="text-slate-300 font-medium">
+          <div className="px-3.5 py-2.5 rounded-2xl bg-[#1b0307]/90 border border-red-500/30 flex items-center gap-2.5 text-xs">
+            <ShieldAlert className="w-4 h-4 text-rose-400 shrink-0" />
+            <span className="text-red-200/80 font-medium">
               Trading Candlestick Charts Only · Selfies, nature, and non-chart images are rejected.
             </span>
           </div>
@@ -242,7 +242,7 @@ export const ChartScannerModal: React.FC<ChartScannerModalProps> = ({
               onDragOver={(e) => e.preventDefault()}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-violet-500/40 hover:border-cyan-400/80 rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-[#141333]/50 hover:bg-[#19183d]/60 group relative overflow-hidden"
+              className="border-2 border-dashed border-red-500/40 hover:border-red-400 rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all bg-[#140205]/60 hover:bg-[#1a0307]/75 group relative overflow-hidden"
             >
               <input
                 ref={fileInputRef}
@@ -252,20 +252,20 @@ export const ChartScannerModal: React.FC<ChartScannerModalProps> = ({
                 className="hidden"
               />
 
-              {/* Animated HUD Corner Brackets */}
-              <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-violet-500/40 group-hover:border-cyan-400 transition-colors" />
-              <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-violet-500/40 group-hover:border-cyan-400 transition-colors" />
-              <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-violet-500/40 group-hover:border-cyan-400 transition-colors" />
-              <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-violet-500/40 group-hover:border-cyan-400 transition-colors" />
+              {/* Animated HUD Corner Brackets - Vampire Red */}
+              <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-red-500/40 group-hover:border-red-400 transition-colors" />
+              <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-red-500/40 group-hover:border-red-400 transition-colors" />
+              <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-red-500/40 group-hover:border-red-400 transition-colors" />
+              <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-red-500/40 group-hover:border-red-400 transition-colors" />
 
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-violet-600/30 via-cyan-500/20 to-fuchsia-600/30 border border-cyan-400/50 flex items-center justify-center text-cyan-300 mb-3 group-hover:scale-110 transition-transform shadow-xl shadow-cyan-950/50">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-red-600/30 via-rose-500/20 to-red-700/30 border border-red-400/50 flex items-center justify-center text-rose-300 mb-3 group-hover:scale-110 transition-transform shadow-xl shadow-red-950/60">
                 <Upload className="w-8 h-8 group-hover:animate-bounce" />
               </div>
 
               <h4 className="text-base sm:text-lg font-black text-white mb-1">
                 Upload Trading Chart Screenshot
               </h4>
-              <p className="text-xs text-slate-400 max-w-xs mb-3.5 leading-relaxed">
+              <p className="text-xs text-red-200/60 max-w-xs mb-3.5 leading-relaxed">
                 Click to browse or drop your Quotex, Pocket Option, or TradingView screenshot
               </p>
 
@@ -274,7 +274,7 @@ export const ChartScannerModal: React.FC<ChartScannerModalProps> = ({
                 {['Quotex', 'Pocket Option', 'TradingView', 'Binomo'].map((platform) => (
                   <span
                     key={platform}
-                    className="px-2.5 py-1 rounded-lg bg-[#1f1d45] border border-violet-500/25 text-[10px] font-mono font-bold text-violet-300"
+                    className="px-2.5 py-1 rounded-lg bg-[#1f0307] border border-red-500/25 text-[10px] font-mono font-bold text-red-300"
                   >
                     {platform}
                   </span>
@@ -282,7 +282,7 @@ export const ChartScannerModal: React.FC<ChartScannerModalProps> = ({
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 group-hover:from-violet-500 group-hover:to-cyan-600 text-white font-black text-xs shadow-lg shadow-violet-900/50 transition-all flex items-center gap-2">
+                <span className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-red-800 group-hover:from-red-500 group-hover:to-rose-500 text-white font-black text-xs shadow-lg shadow-red-950/60 transition-all flex items-center gap-2">
                   <Zap className="w-4 h-4 text-amber-300 fill-amber-300" />
                   <span>Select Screenshot</span>
                 </span>
@@ -579,7 +579,7 @@ export const ChartScannerModal: React.FC<ChartScannerModalProps> = ({
                   <div className="space-y-2 pt-1">
                     <button
                       onClick={handleApplySignal}
-                      className="w-full py-4 px-5 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-black text-sm sm:text-base tracking-wider shadow-xl shadow-violet-600/35 glow-analyzer flex items-center justify-center gap-2.5 transition-all transform active:scale-[0.98] cursor-pointer"
+                      className="w-full py-4 px-5 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-red-800 hover:from-red-500 hover:to-rose-500 text-white font-black text-sm sm:text-base tracking-wider shadow-xl shadow-red-950/70 glow-analyzer flex items-center justify-center gap-2.5 transition-all transform active:scale-[0.98] cursor-pointer"
                     >
                       <Sparkles className="w-4 h-4 text-amber-300 fill-amber-300 animate-spin-slow" />
                       <span>APPLY SIGNAL TO BOT</span>
@@ -587,7 +587,7 @@ export const ChartScannerModal: React.FC<ChartScannerModalProps> = ({
 
                     <button
                       onClick={handleReset}
-                      className="w-full py-2.5 px-4 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold transition-all cursor-pointer"
+                      className="w-full py-2.5 px-4 rounded-xl bg-white/5 hover:bg-white/10 text-red-200/80 hover:text-white text-xs font-semibold transition-all cursor-pointer border border-red-500/20"
                     >
                       Scan Another Chart Screenshot
                     </button>

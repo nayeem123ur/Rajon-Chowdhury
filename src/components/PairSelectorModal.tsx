@@ -35,37 +35,37 @@ export const PairSelectorModal: React.FC<PairSelectorModalProps> = ({
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="w-full max-w-lg rounded-3xl bg-[#14152e] border border-violet-500/30 shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="w-full max-w-lg rounded-3xl bg-[#130104] border border-red-500/35 shadow-2xl shadow-red-950/80 overflow-hidden flex flex-col max-h-[85vh]">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-violet-900/30 flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b border-red-900/30 flex items-center justify-between bg-[#0e0002]/80">
           <div>
             <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-              <Globe className="w-5 h-5 text-violet-400" />
+              <Globe className="w-5 h-5 text-rose-400" />
               Select Trading Asset
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-red-200/60 mt-0.5">
               Quotex & Pocket Option High Payout OTC Pairs
             </p>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-full bg-black/60 hover:bg-black/90 text-red-300/80 hover:text-white flex items-center justify-center transition-colors border border-red-500/30 cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Search & Filters */}
-        <div className="p-4 space-y-3 bg-[#111226]/50">
+        <div className="p-4 space-y-3 bg-[#0d0103]/60 border-b border-red-900/20">
           <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-red-300/50" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search pair (e.g. USD, EUR, GBP, DZD)..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1c1d3b] border border-violet-500/20 text-white placeholder-slate-400 text-sm focus:outline-none focus:border-violet-500"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1c0307] border border-red-500/25 text-white placeholder-red-300/40 text-sm focus:outline-none focus:border-red-500"
             />
           </div>
 
@@ -76,8 +76,8 @@ export const PairSelectorModal: React.FC<PairSelectorModalProps> = ({
                 onClick={() => setFilter(type)}
                 className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   filter === type
-                    ? 'bg-violet-600 text-white shadow-sm'
-                    : 'bg-[#181935] text-slate-400 hover:text-white'
+                    ? 'bg-gradient-to-r from-red-600 to-rose-700 text-white shadow-md shadow-red-600/40 glow-red'
+                    : 'bg-[#180205] text-red-300/60 hover:text-white border border-red-500/15'
                 }`}
               >
                 {type}
@@ -99,8 +99,8 @@ export const PairSelectorModal: React.FC<PairSelectorModalProps> = ({
                 }}
                 className={`w-full p-3 rounded-2xl border transition-all flex items-center justify-between text-left group cursor-pointer ${
                   isSelected
-                    ? 'bg-violet-900/30 border-violet-500 shadow-md shadow-violet-900/20'
-                    : 'bg-[#181935]/70 hover:bg-[#1f2042] border-violet-500/15'
+                    ? 'bg-red-950/60 border-red-500 shadow-md shadow-red-950/50'
+                    : 'bg-[#180205]/75 hover:bg-[#250409] border-red-500/15'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -110,17 +110,17 @@ export const PairSelectorModal: React.FC<PairSelectorModalProps> = ({
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="font-bold text-white text-sm group-hover:text-violet-300">
+                      <span className="font-bold text-white text-sm group-hover:text-red-300">
                         {pair.name}
                       </span>
                       {pair.payout >= 90 && (
-                        <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
                           <Flame className="w-2.5 h-2.5" />
                           {pair.payout}%
                         </span>
                       )}
                     </div>
-                    <div className="text-[11px] text-slate-400 mt-0.5 font-mono">
+                    <div className="text-[11px] text-red-200/60 mt-0.5 font-mono">
                       <span>{pair.currentPrice.toFixed(pair.decimals)}</span>
                       <span className="mx-1.5">·</span>
                       <span className={pair.change24h >= 0 ? 'text-emerald-400' : 'text-rose-400'}>
@@ -135,12 +135,12 @@ export const PairSelectorModal: React.FC<PairSelectorModalProps> = ({
                     <span className="text-xs font-mono font-bold text-emerald-400 block">
                       {pair.payout}% Payout
                     </span>
-                    <span className="text-[10px] text-slate-400 uppercase">
+                    <span className="text-[10px] text-red-300/60 uppercase">
                       {pair.volatility} Vol
                     </span>
                   </div>
                   {isSelected && (
-                    <div className="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-red-600/50">
                       <Check className="w-3.5 h-3.5" />
                     </div>
                   )}
